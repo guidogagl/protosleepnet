@@ -197,46 +197,8 @@ class GroupDataset(PhysioExDataset):
             self.y_test.append(y)
             self.group_test.append(group)
 
-        if self.L == -1:
-            # in this case we need to rebalance the dataset by oversampling the minority class
-            # use as class the group labels
-
-
-
-            X_resampled, y_resampled, group_resampled = self.X_train.copy(), self.y_train.copy(), self.group_train.copy()
-
-            group_train = np.array([ group[0] for group in self.group_train ])
-            minority_class = np.argmin(
-                np.bincount(group_train)
-            )
-
-            # resample the minority class to match the majority class
-            minority_indexes = np.where(group_train == minority_class)[0]
-            majority_indexes = np.where(group_train != minority_class)[0]
-
-            num_minority = len(minority_indexes)
-            num_majority = len(majority_indexes)
-
-            while num_minority < num_majority:
-                # randomly sample from the minority class
-                sampled_idx = np.random.choice(
-                    minority_indexes, size=(1,), replace=True
-                ).reshape(-1)[0]
-
-                X_resampled.append( self.X_train[sampled_idx] )
-                y_resampled.append( self.y_train[sampled_idx] )
-                group_resampled.append( self.group_train[sampled_idx] )
-
-                num_minority += 1
-            
-            self.X_train = X_resampled
-            self.y_train = y_resampled
-            self.group_train = group_resampled
-
-            train_idx = np.arange(len(self.X_train))
-        else:     
-            train_idx = np.arange(len(self.X_train) - self.L + 1)
-
+        
+        train_idx = np.arange(len(self.X_train) - self.L + 1)
         valid_idx = np.arange(len(train_idx), len(train_idx) + len(self.X_valid))
         test_idx = np.arange(
             len(train_idx) + len(valid_idx),
@@ -246,7 +208,11 @@ class GroupDataset(PhysioExDataset):
         self.valid_offset = len(train_idx)
         self.test_offset = len(valid_idx) + len(train_idx)
 
-        self.train_idx, self.valid_idx, self.test_idx = train_idx, valid_idx, test_idx
+        self.train_idx, self.valid_idx, self.test_idx = (
+            torch.tensor(train_idx).long(),
+            torch.tensor(valid_idx).long(),
+            torch.tensor(test_idx).long(),
+        )
 
         self.len = len(self.train_idx) + len(self.valid_idx) + len(self.test_idx)
 
@@ -288,7 +254,7 @@ class GroupDataset(PhysioExDataset):
         # as group take the most-occurring group in the sequence
         group = group.mode()[0]
 
-        return X, y, group, 0
+        return X, y, torch.tensor(group).long(), torch.tensor(0).long()
 
     def get_sets(self):
         return self.train_idx, self.valid_idx, self.test_idx
