@@ -1,6 +1,5 @@
 import os
 import shutil
-import types
 from typing import List
 
 import pandas as pd
@@ -48,20 +47,7 @@ models = [
 ]
 
 
-def occlusion_maskv2(inputs: torch.Tensor):
-    occlusion_mask = torch.zeros(
-        inputs.shape[0], inputs.shape[1], inputs.shape[2], device=inputs.device
-    )
-    # randomly set channels to 1
-    # batch_size is set to 1 so we can avoid it
-    for i in range(inputs.shape[0]):
-        num_channels_to_occlude = torch.randint(1, 3, (1,)).item()
-        channels_to_occlude = torch.randperm(inputs.shape[2])[:num_channels_to_occlude]
-        occlusion_mask[i, :, channels_to_occlude] = 1
-    return occlusion_mask
-
-
-def test_robustness(
+def test_performances(
     datasets: List[str] = None,
     datamodule_kwargs: dict = None,
     model_name: str = "seqsleepnet",  # if passed model_class, model_config and resume are ignored
@@ -98,29 +84,12 @@ def test_robustness(
             ckpt_path=checkpoint_path,
         )
 
-        # we need to redefine the test_step method to use the occlusion mask
-        # first backup the original test_step method
-        original_test_step = model_instance.test_step
-
-        def test_step(self, batch, batch_idx):
-            inputs, targets, subjects, dataset_idx = batch
-
-            # create occlusion mask
-            occlusion_mask = occlusion_maskv2(inputs)
-            inputs = torch.einsum("bsctf, bsc -> bsctf", inputs, occlusion_mask)
-
-            batch = (inputs, targets, subjects, dataset_idx)
-            return original_test_step(batch, batch_idx)
-
-        # redefine the model test_step
-        model_instance.test_step = types.MethodType(test_step, model_instance)
-
         devices = find_usable_cuda_devices(-1)
         logger.info(f"Available devices: {devices}")
 
         my_logger = [
-            TensorBoardLogger(save_dir=checkpoint_dir + "/rob_logs/"),
-            CSVLogger(save_dir=checkpoint_dir + "/rob_logs/"),
+            TensorBoardLogger(save_dir=checkpoint_dir + "/test_logs/"),
+            CSVLogger(save_dir=checkpoint_dir + "/test_logs/"),
         ]
 
         trainer = Trainer(
@@ -136,14 +105,14 @@ def test_robustness(
         results_df = pd.DataFrame([results])
 
         # read the test results if it exists
-        if os.path.exists(os.path.join(checkpoint_dir, "robustness.csv")):
+        if os.path.exists(os.path.join(checkpoint_dir, "test_results.csv")):
             existing_results = pd.read_csv(
-                os.path.join(checkpoint_dir, "robustness.csv")
+                os.path.join(checkpoint_dir, "test_results.csv")
             )
             # append the new results to the existing results
             results_df = pd.concat([existing_results, results_df], ignore_index=True)
 
-        results_df.to_csv(os.path.join(checkpoint_dir, "robustness.csv"), index=False)
+        results_df.to_csv(os.path.join(checkpoint_dir, "test_results.csv"), index=False)
 
     return
 
@@ -151,25 +120,25 @@ def test_robustness(
 def main():
     set_float32_matmul_precision("medium")
 
-    # test robustness for all datasets
+    # test performances for all datasets
     for model_name, model in zip(models_names, models):
-        logger.info(f"Testing robustness for model: {model_name}")
+        logger.info(f"Testing model: {model_name}")
         # repeat the test 5 trials
         # to get a more robust estimate of the performance
-        for i in tqdm(range(5), desc=f"Testing {model_name} robustness"):
+        for i in tqdm(range(1), desc=f"Testing {model_name} performances"):
             seed_everything(42 + i, workers=True)  # set seed for reproducibility
 
             if i == 0:
-                # remove the existing robustness.csv file if it exists
+                # remove the existing test_results.csv file if it exists
                 # and the existing logs
                 for dataset in datasets:
                     checkpoint_dir = f"articles/protosleepnet/models/debug/{model_name}/{dataset}/EEG-EOG-EMG/"
-                    if os.path.exists(os.path.join(checkpoint_dir, "robustness.csv")):
-                        os.remove(os.path.join(checkpoint_dir, "robustness.csv"))
-                    if os.path.exists(os.path.join(checkpoint_dir, "rob_logs")):
-                        shutil.rmtree(os.path.join(checkpoint_dir, "rob_logs"))
+                    if os.path.exists(os.path.join(checkpoint_dir, "test_results.csv")):
+                        os.remove(os.path.join(checkpoint_dir, "test_results.csv"))
+                    if os.path.exists(os.path.join(checkpoint_dir, "test_logs")):
+                        shutil.rmtree(os.path.join(checkpoint_dir, "test_logs"))
 
-            test_robustness(
+            test_performances(
                 datasets=datasets,
                 datamodule_kwargs=datamodule_kwargs,
                 model_name=model_name,

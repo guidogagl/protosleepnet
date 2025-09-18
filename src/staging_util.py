@@ -3,7 +3,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import List, Callable
 
-import h5py as h5
+
 import numpy as np
 import pandas as pd
 import torch
@@ -71,10 +71,6 @@ class GroupDataset(PhysioExDataset):
             self.X.append(X)
             self.y.append(y)
             self.groups.append(0)  # healthy group is 0
-
-    
-
-    
 
         # now fetch the unhealthy dataset
         dataset = PhysioExDataset(
@@ -171,7 +167,11 @@ class GroupDataset(PhysioExDataset):
             self.X_train = (X_train - self.mean) / self.std
             self.y_train = torch.cat(self.y_train, dim=0)
             self.group_train = torch.cat(self.group_train, dim=0)
-        
+
+        # check for NaN or Inf values in the training set
+        if torch.isnan(self.X_train).any() or torch.isinf(self.X_train).any():
+            raise ValueError("NaN or Inf values found in the training set. Check your data preprocessing.")
+
         # scale validation and test set
         self.X_valid, self.y_valid, self.group_valid = [], [], []
         for idx in tqdm(valid_idx, desc="Splitting validation set into sequences"):
@@ -180,6 +180,9 @@ class GroupDataset(PhysioExDataset):
             group = self.groups[idx]
 
             X = (X - self.mean) / self.std
+
+            if torch.isnan(X).any() or torch.isinf(X).any():
+                raise ValueError("NaN or Inf values found in the validation set. Check your data preprocessing.")
 
             self.X_valid.append(X)
             self.y_valid.append(y)
@@ -192,6 +195,9 @@ class GroupDataset(PhysioExDataset):
             group = self.groups[idx]
 
             X = (X - self.mean) / self.std
+
+            if torch.isnan(X).any() or torch.isinf(X).any():
+                raise ValueError("NaN or Inf values found in the test set. Check your data preprocessing.")
 
             self.X_test.append(X)
             self.y_test.append(y)
@@ -254,7 +260,7 @@ class GroupDataset(PhysioExDataset):
         # as group take the most-occurring group in the sequence
         group = group.mode()[0]
 
-        return X, y, torch.tensor(group).long(), torch.tensor(0).long()
+        return X, y, group.long(), torch.tensor(0).long()
 
     def get_sets(self):
         return self.train_idx, self.valid_idx, self.test_idx

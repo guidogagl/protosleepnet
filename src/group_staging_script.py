@@ -12,6 +12,7 @@ parser.add_argument("--FOLD", type=str, default="0", help="Fold number (default:
 parser.add_argument(
     "--GROUP", type=str, default="alzheimers", help="Group name (default: alzheimers)."
 )
+
 args = parser.parse_args()
 
 data_folder = args.DATA_FOLDER
@@ -19,39 +20,32 @@ vsc_data = args.VSC_DATA
 fold = int(args.FOLD)
 group = args.GROUP
 
+NUM_FOLDS = 4
+
 import os
 
 os.chdir(os.path.join(vsc_data, "physioex"))
 
 import sys
 
-sys.path.append(
-    os.path.join(vsc_data, "physioex", "articles", "protosleepnet", "scripts", "src")
-)
+sys.path.append(os.path.join(vsc_data, "physioex", "articles", "ProtoEx-Sleep", "src"))
 
 from staging_util import GroupDataset
 
 from physioex.data import PhysioExDataModule
-from physioex.train.utils import finetune, test
 from physioex.train.models import load_model
-
+from physioex.train.utils import finetune, test
 
 print(f"Running staging script for group: {group}, fold: {fold}")
-if group == "alzheimers":
-    num_folds = 4
-elif group == "parkinsons":
-    num_folds = 4
-else:
-    raise ValueError("Invalid GROUP specified. Use 'alzheimers' or 'parkinsons'.")
 
-#model_name = "protosleeptransformer"
-#model_class = "physioex.train.networks.protosleeptransformer:ProtoSleepTransformerNet"
+# model_name = "protosleeptransformer"
+# model_class = "physioex.train.networks.protosleeptransformer:ProtoSleepTransformerNet"
 
 model_name = "protoseqsleepnet"
 model_class = "physioex.train.networks.protoseqsleepnet:ProtoSeqSleepNet"
 
-#model_name = "seqsleepnet"
-#model_class = "physioex.train.networks.seqsleepnet:SeqSleepNet"
+# model_name = "seqsleepnet"
+# model_class = "physioex.train.networks.seqsleepnet:SeqSleepNet"
 
 batch_size = 256
 num_nodes = 1
@@ -66,32 +60,35 @@ gd = GroupDataset(
     sequence_length=21,
 )
 
-gd.set_num_folds(num_folds)
+gd.set_num_folds(NUM_FOLDS)
 
 dm = PhysioExDataModule(
     datasets=gd,
     batch_size=batch_size,
     folds=fold,
-    num_workers=1,
+    num_workers=23,
+    data_prefetch=False,
 )
 
-model_kwargs = {"in_channels": 3, "sequence_length": 21, "weights": [0.75, 0.25]}
+model_kwargs = {"in_channels": 3, "sequence_length": 21}
 
 model = load_model(
-    model = model_class,
+    model=model_class,
     model_kwargs=model_kwargs,
-    ckpt_path=f"articles/protosleepnet/models/debug/{model_name}/shhs/EEG-EOG-EMG/model.ckpt",
-    device="cpu",
+    ckpt_path=f"articles/ProtoEx-Sleep/models/debug/{model_name}/shhs/EEG-EOG-EMG/model.ckpt",
     softmax=False,
     summary=False,
 )
+
+if model is None:
+    raise ValueError(f"Model {model_class} not found or could not be loaded.")
 
 train_kwargs = {
     "datasets": dm,
     "num_validations": 2,
     "max_epochs": max_epoch,
     "num_nodes": 1,
-    "checkpoint_path": f"articles/protosleepnet/models/debug/{model_name}/group/{group}/staging/fold={fold}/",
+    "checkpoint_path": f"articles/ProtoEx-Sleep/models/debug/{model_name}/group/{group}/staging/fold={fold}/",
 }
 
 best_checkpoint = finetune(
@@ -101,10 +98,9 @@ best_checkpoint = finetune(
 )
 
 model = load_model(
-    model = model_class,
+    model=model_class,
     model_kwargs=model_kwargs,
     ckpt_path=best_checkpoint,
-    device="cpu",
     softmax=False,
     summary=False,
 )
@@ -112,5 +108,5 @@ model = load_model(
 test(
     datasets=dm,
     model=model,  # if passed model_class, model_config and resume are ignored
-    results_path = f"articles/protosleepnet/models/debug/{model_name}/group/{group}/staging/fold={fold}/",
+    results_path=f"articles/ProtoEx-Sleep/models/debug/{model_name}/group/{group}/staging/fold={fold}/",
 )
