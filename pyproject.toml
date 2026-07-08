@@ -22,6 +22,11 @@ dependencies = [
     "tqdm",
 ]
 
+[project.optional-dependencies]
+# Only needed to (re)generate the interactive explainability demo bundle
+# (src/protosleepnet/demo). The demo itself is a static app and needs none of this.
+demo = ["umap-learn"]
+
 [project.urls]
 Homepage = "https://github.com/guidogagl/protosleepnet"
 "Paper" = "https://www.nature.com/npjdigitalmed/"
