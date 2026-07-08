@@ -56,6 +56,18 @@ MODELS = {
 }
 
 
+# SleepEDF recordings are full ~24 h ambulatory cassettes; physioex's
+# trim_excess_wake keeps only 30 min of wake around the sleep period and marks
+# the rest as -1. We run the model on the full recording (correct voting
+# context, matching the benchmark) but store only this trimmed window so the
+# atlas/hypnogram/raw aren't dominated by day-time wake.
+def trim_window(labels):
+    idx = np.where(np.asarray(labels) != -1)[0]
+    if len(idx) == 0:
+        return 0, len(labels)
+    return int(idx[0]), int(idx[-1]) + 1
+
+
 # ── prediction: sliding-window voting, non-quantized ─────────────────────
 @torch.no_grad()
 def predict_subject(model, inputs, L, device, quantize=False):
@@ -128,6 +140,8 @@ def compute_signals(out_dir: Path, max_subjects=None, n_ref_epochs=6):
         x = stack_channels(batch).squeeze(0).cpu().numpy()  # (N, C, S)
         assert x.ndim == 3, f"unexpected raw shape {x.shape} for {sid}"
         y = batch["labels"].squeeze(0).cpu().numpy().astype(np.int64)  # (N,)
+        s, e = trim_window(y)  # drop excess pre/post-sleep wake
+        x, y = x[s:e], y[s:e]
         n = x.shape[0]
 
         pack.write_f16(sig_dir / f"{sid}.raw.bin", x)
@@ -185,7 +199,8 @@ def compute_model(backbone, checkpoint, codebook_path, committed_root, out_dir,
         labels = batch["labels"].reshape(-1).cpu().numpy().astype(np.int64)
         h = embed_subject(model, inputs, device)       # (N, d)
         proba = predict_subject(model, inputs, L, device, quantize=False)  # (N, 5)
-        per_subject[sid] = dict(h=h, proba=proba, labels=labels)
+        s, e = trim_window(labels)  # keep only the trimmed sleep window
+        per_subject[sid] = dict(h=h[s:e], proba=proba[s:e], labels=labels[s:e])
 
     # assemble global arrays in canonical subject order
     xs_h, xs_lbl, xs_proba, xs_subj, xs_epoch = [], [], [], [], []
