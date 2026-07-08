@@ -5,7 +5,7 @@ but with in_chan=3. The LearnableFilterbank applies per-channel filters,
 then concatenates into D*in_chan=96 features for the BiLSTM.
 
 Usage:
-    python examples/pretrained/sleeptransformer-phan/baselines/train_seq_3ch.py --gpu_id 0
+    python -m protosleepnet.baselines.train_seq_3ch --gpu_id 0
 """
 import argparse
 import json

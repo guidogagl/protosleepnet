@@ -4,4 +4,4 @@ dependencies:
   - python=3.12
   - pip
   - pip:
-      - -r requirements.txt
+      - -e .            # installs the protosleepnet package + deps (physioex==2.0.0, ...)

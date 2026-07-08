@@ -5,7 +5,7 @@ but with in_chan=3 and 3-channel input. The EpochTransformer concatenates
 per-channel features (each truncated to d_model=128) into a 384-dim vector.
 
 Usage:
-    python examples/pretrained/sleeptransformer-phan/baselines/train_st_3ch.py --gpu_id 0
+    python -m protosleepnet.baselines.train_st_3ch --gpu_id 0
 """
 import argparse
 import json
