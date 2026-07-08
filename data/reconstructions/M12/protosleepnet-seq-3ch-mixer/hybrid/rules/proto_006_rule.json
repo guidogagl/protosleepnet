@@ -1,0 +1,9 @@
+{
+  "prototype_idx": 6,
+  "dominant_class": "N2",
+  "rule_text": "Prototype 6 encodes N2 (100% pure) primarily through EEG (82%), with EOG (11%) and EMG (7%) contribution.\nIts EEG signature shows elevated \u03b3 (+0.5 dB, sensitivity=4.3) and elevated \u03b2_h (+1.3 dB, sensitivity=3.1).\nThe \u03b3 activity is present in 3% of each epoch (transient), with quiescent eye movements (SEM 31% active) and atonic muscle tone.\nThis is coherent with N2 physiology: \u03c3 elevated, \u03c3 relevant, EOG quiescent \u2014 all confirmed. Note: model primarily uses \u03b3, atypical for N2.",
+  "s1": "Prototype 6 encodes N2 (100% pure) primarily through EEG (82%), with EOG (11%) and EMG (7%) contribution.",
+  "s2": "Its EEG signature shows elevated \u03b3 (+0.5 dB, sensitivity=4.3) and elevated \u03b2_h (+1.3 dB, sensitivity=3.1).",
+  "s3": "The \u03b3 activity is present in 3% of each epoch (transient), with quiescent eye movements (SEM 31% active) and atonic muscle tone.",
+  "s4": "This is coherent with N2 physiology: \u03c3 elevated, \u03c3 relevant, EOG quiescent \u2014 all confirmed. Note: model primarily uses \u03b3, atypical for N2."
+}

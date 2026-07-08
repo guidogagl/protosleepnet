@@ -1,0 +1,9 @@
+{
+  "prototype_idx": 9,
+  "dominant_class": "W",
+  "rule_text": "Prototype 9 encodes W (100% pure) primarily through EEG (59%), with EOG (39%) and EMG (2%) contribution.\nIts EEG signature shows elevated \u03b4 (+1.5 dB, sensitivity=7.6) and elevated \u03b8 (+0.3 dB, sensitivity=3.3).\nThe \u03b4 activity is present in 17% of each epoch (transient), with moderate eye movements (Blink 69% active) and intermediate muscle tone.\nThis is partially coherent with W physiology: confirmed: EMG tonic, EOG active; missing: \u03b1 elevated+relevant. Note: model primarily uses \u03b4, atypical for W.",
+  "s1": "Prototype 9 encodes W (100% pure) primarily through EEG (59%), with EOG (39%) and EMG (2%) contribution.",
+  "s2": "Its EEG signature shows elevated \u03b4 (+1.5 dB, sensitivity=7.6) and elevated \u03b8 (+0.3 dB, sensitivity=3.3).",
+  "s3": "The \u03b4 activity is present in 17% of each epoch (transient), with moderate eye movements (Blink 69% active) and intermediate muscle tone.",
+  "s4": "This is partially coherent with W physiology: confirmed: EMG tonic, EOG active; missing: \u03b1 elevated+relevant. Note: model primarily uses \u03b4, atypical for W."
+}

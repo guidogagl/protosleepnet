@@ -1,0 +1,64 @@
+{
+  "prototype_idx": 6,
+  "dominant_class": "W",
+  "predicted_purity": 1.0,
+  "predicted_distribution": {
+    "W": 256,
+    "N1": 0,
+    "N2": 0,
+    "N3": 0,
+    "REM": 0
+  },
+  "n_bands": 8,
+  "feature_names": [
+    "delta",
+    "theta",
+    "alpha",
+    "sigma_low",
+    "sigma_high",
+    "beta_low",
+    "beta_high",
+    "gamma"
+  ],
+  "eeg_contribution": 166.83471121266484,
+  "band_relevance_pct": {
+    "delta": 30.58351910724939,
+    "theta": 6.614481233279196,
+    "alpha": -5.894674382939204,
+    "sigma_low": -0.33811531478778933,
+    "sigma_high": 0.21582549295936504,
+    "beta_low": -2.4150875673919217,
+    "beta_high": 26.859749858215608,
+    "gamma": 23.709545521444277
+  },
+  "marginal_importance": {
+    "delta": 51.02392578125,
+    "theta": 11.035250663757324,
+    "alpha": -9.834362983703613,
+    "sigma_low": -0.5640937089920044,
+    "sigma_high": 0.3600718379020691,
+    "beta_low": -4.029204368591309,
+    "beta_high": 44.81138610839844,
+    "gamma": 39.55575180053711
+  },
+  "feature_direction": {
+    "delta": "suppressed",
+    "theta": "suppressed",
+    "alpha": "suppressed",
+    "sigma_low": "suppressed",
+    "sigma_high": "suppressed",
+    "beta_low": "elevated",
+    "beta_high": "elevated",
+    "gamma": "elevated"
+  },
+  "channel_importance": {
+    "EEG": 207.2931365966797,
+    "EOG": 89.31295013427734,
+    "EMG": 40.74772262573242
+  },
+  "channel_importance_pct": {
+    "EEG": 0.6144680976867676,
+    "EOG": 0.26474565267562866,
+    "EMG": 0.12078631669282913
+  }
+}

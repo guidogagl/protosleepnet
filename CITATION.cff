@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the paper and the software."
+title: "ProtoSleepNet: prototype-based interpretable sleep staging"
+type: software
+authors:
+  - family-names: Gagliardi
+    given-names: Guido
+    orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: fill ORCID
+    affiliation: "KU Leuven"
+  # TODO: add remaining co-authors (with ORCIDs) matching the manuscript author list
+repository-code: "https://github.com/guidogagl/protosleepnet"
+license: MIT
+version: "1.0.0"
+# doi: "10.5281/zenodo.XXXXXXX"   # TODO: fill Zenodo concept DOI at release
+preferred-citation:
+  type: article
+  title: "Prototype-based interpretable sleep staging with physiologically meaningful sub-stage pattern discovery"
+  authors:
+    - family-names: Gagliardi
+      given-names: Guido
+  journal: "npj Digital Medicine"
+  year: 2026   # TODO: confirm at acceptance

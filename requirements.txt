@@ -1,0 +1,10 @@
+# ProtoSleepNet paper code — pinned to the versions used for the manuscript.
+# The model, data loaders, preprocessing, splits and metrics come from physioex.
+physioex==2.0.0
+
+# analysis / figures (physioex pulls torch, lightning, huggingface_hub, etc.)
+numpy
+scipy
+scikit-learn
+matplotlib
+tqdm

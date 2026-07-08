@@ -1,0 +1,25 @@
+{
+  "prototype_idx": 6,
+  "dominant_stage": "N2",
+  "selected_epoch_idx": 0,
+  "selected_epoch_label": "N2",
+  "l2_distance": 3.5292184352874756,
+  "ig_steps": 128,
+  "ig_completeness_gap": 0.009635594673454762,
+  "band_names": [
+    "delta",
+    "theta",
+    "alpha",
+    "sigma_low",
+    "sigma_high",
+    "beta_low",
+    "beta_high",
+    "gamma",
+    "mains"
+  ],
+  "channel_names": [
+    "EEG",
+    "EOG",
+    "EMG"
+  ]
+}

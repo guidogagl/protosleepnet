@@ -1,0 +1,72 @@
+{
+  "method": "model_driven",
+  "backbone": "seq",
+  "model_name": "protosleepnet-seq-3ch-mixer",
+  "n_prototypes": 12,
+  "n_per_proto": 256,
+  "n_steps": 1000,
+  "lr": 0.01,
+  "final_loss": 4.4562578201293945,
+  "per_prototype": [
+    {
+      "prototype": 0,
+      "n_samples": 256,
+      "mean_distance": 2.8235549926757812
+    },
+    {
+      "prototype": 1,
+      "n_samples": 256,
+      "mean_distance": 2.05576229095459
+    },
+    {
+      "prototype": 2,
+      "n_samples": 256,
+      "mean_distance": 2.4670522212982178
+    },
+    {
+      "prototype": 3,
+      "n_samples": 256,
+      "mean_distance": 1.576648235321045
+    },
+    {
+      "prototype": 4,
+      "n_samples": 256,
+      "mean_distance": 2.1436119079589844
+    },
+    {
+      "prototype": 5,
+      "n_samples": 256,
+      "mean_distance": 1.9757424592971802
+    },
+    {
+      "prototype": 6,
+      "n_samples": 256,
+      "mean_distance": 2.1308858394622803
+    },
+    {
+      "prototype": 7,
+      "n_samples": 256,
+      "mean_distance": 1.2673293352127075
+    },
+    {
+      "prototype": 8,
+      "n_samples": 256,
+      "mean_distance": 1.5654702186584473
+    },
+    {
+      "prototype": 9,
+      "n_samples": 256,
+      "mean_distance": 2.8045434951782227
+    },
+    {
+      "prototype": 10,
+      "n_samples": 256,
+      "mean_distance": 2.0151572227478027
+    },
+    {
+      "prototype": 11,
+      "n_samples": 256,
+      "mean_distance": 1.8796467781066895
+    }
+  ]
+}

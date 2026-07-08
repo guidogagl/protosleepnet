@@ -1,3 +1,27 @@
+# --- environments / caches ---
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+.DS_Store
+
+# --- runtime outputs (kept in the backup root, not in git) ---
 /logs
+*.log
 /models
-/scripts
+*.ckpt
+*.pt
+*.pth
+*.pkl
+*.joblib
+
+# --- large arrays / bulk artifacts (backup root; see README) ---
+*.npy
+!data/**/*.npy          # small committed figure-source stats are whitelisted
+
+# --- symlinked bulk (predictions / reconstructions live in the backup root) ---
+/json
+/reconstructions_bulk
+
+# --- cluster-local config (copy from env.sh.example) ---
+examples/slurm/env.sh

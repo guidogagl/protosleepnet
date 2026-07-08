@@ -1,0 +1,16 @@
+{
+  "prototype_idx": 1,
+  "n_samples": 256,
+  "n_real_init": 173,
+  "n_padded_init": 83,
+  "method": "hybrid",
+  "backbone": "seq",
+  "model_name": "protosleepnet-seq-3ch-mixer",
+  "codebook_size": 12,
+  "n_steps": 500,
+  "lr": 0.01,
+  "mean_distance": 3.7130746841430664,
+  "std_distance": 1.5868829488754272,
+  "final_loss": 7.3495001792907715,
+  "data_driven_dir": "/leonardo_work/IscrC_SELFEEG/pretrained/protosleepnet-seq-3ch-mixer/reconstruction_per_dataset_m12/sleepedf"
+}

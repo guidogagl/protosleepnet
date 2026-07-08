@@ -1,0 +1,108 @@
+{
+  "method": "data_driven",
+  "backbone": "seq",
+  "model_name": "protosleepnet-seq-3ch-mixer",
+  "n_prototypes": 12,
+  "top_k": 256,
+  "total_train_epochs": 2867028,
+  "cluster_sizes": [
+    30656,
+    88365,
+    67901,
+    691030,
+    90460,
+    119424,
+    73184,
+    986241,
+    497733,
+    26548,
+    30497,
+    164989
+  ],
+  "per_prototype": [
+    {
+      "prototype": 0,
+      "n_samples": 256,
+      "cluster_size": 30656,
+      "mean_distance": 4.146428108215332,
+      "dominant_stage": "N2"
+    },
+    {
+      "prototype": 1,
+      "n_samples": 256,
+      "cluster_size": 88365,
+      "mean_distance": 3.959336042404175,
+      "dominant_stage": "REM"
+    },
+    {
+      "prototype": 2,
+      "n_samples": 256,
+      "cluster_size": 67901,
+      "mean_distance": 3.0619235038757324,
+      "dominant_stage": "N3"
+    },
+    {
+      "prototype": 3,
+      "n_samples": 256,
+      "cluster_size": 691030,
+      "mean_distance": 4.1629462242126465,
+      "dominant_stage": "N1"
+    },
+    {
+      "prototype": 4,
+      "n_samples": 256,
+      "cluster_size": 90460,
+      "mean_distance": 3.283169746398926,
+      "dominant_stage": "REM"
+    },
+    {
+      "prototype": 5,
+      "n_samples": 256,
+      "cluster_size": 119424,
+      "mean_distance": 3.0018463134765625,
+      "dominant_stage": "N2"
+    },
+    {
+      "prototype": 6,
+      "n_samples": 256,
+      "cluster_size": 73184,
+      "mean_distance": 4.617722034454346,
+      "dominant_stage": "N2"
+    },
+    {
+      "prototype": 7,
+      "n_samples": 256,
+      "cluster_size": 986241,
+      "mean_distance": 2.901775360107422,
+      "dominant_stage": "W"
+    },
+    {
+      "prototype": 8,
+      "n_samples": 256,
+      "cluster_size": 497733,
+      "mean_distance": 4.861593246459961,
+      "dominant_stage": "N2"
+    },
+    {
+      "prototype": 9,
+      "n_samples": 256,
+      "cluster_size": 26548,
+      "mean_distance": 3.567119598388672,
+      "dominant_stage": "N2"
+    },
+    {
+      "prototype": 10,
+      "n_samples": 256,
+      "cluster_size": 30497,
+      "mean_distance": 3.161609649658203,
+      "dominant_stage": "N3"
+    },
+    {
+      "prototype": 11,
+      "n_samples": 256,
+      "cluster_size": 164989,
+      "mean_distance": 4.429202079772949,
+      "dominant_stage": "N2"
+    }
+  ]
+}

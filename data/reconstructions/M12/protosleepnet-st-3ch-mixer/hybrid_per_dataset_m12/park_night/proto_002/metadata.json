@@ -1,0 +1,16 @@
+{
+  "prototype_idx": 2,
+  "n_samples": 256,
+  "n_real_init": 256,
+  "n_padded_init": 0,
+  "method": "hybrid",
+  "backbone": "st",
+  "model_name": "protosleepnet-st-3ch-mixer",
+  "codebook_size": 12,
+  "n_steps": 500,
+  "lr": 0.01,
+  "mean_distance": 1.4023640155792236,
+  "std_distance": 0.23795859515666962,
+  "final_loss": 2.7511520385742188,
+  "data_driven_dir": "/leonardo_work/IscrC_SELFEEG/pretrained/protosleepnet-st-3ch-mixer/reconstruction_per_dataset_m12/park_night"
+}

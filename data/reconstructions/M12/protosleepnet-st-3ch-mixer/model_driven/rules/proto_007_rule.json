@@ -1,0 +1,9 @@
+{
+  "prototype_idx": 7,
+  "dominant_class": "REM",
+  "rule_text": "Prototype 7 encodes REM (100% pure) primarily through EOG (67%), with EEG (25%) and EMG (9%) contribution.\nIts EEG signature shows suppressed \u03b1 (-3.8 dB, sensitivity=1.2) and elevated \u03b2_h (+6.4 dB, sensitivity=0.8).\nThe \u03b1 activity is present in 0% of each epoch (transient), with quiescent eye movements (REM 0% active) and atonic muscle tone.\nThis is partially coherent with REM physiology: confirmed: EOG dominant, EMG atonic; missing: \u03b8 elevated.",
+  "s1": "Prototype 7 encodes REM (100% pure) primarily through EOG (67%), with EEG (25%) and EMG (9%) contribution.",
+  "s2": "Its EEG signature shows suppressed \u03b1 (-3.8 dB, sensitivity=1.2) and elevated \u03b2_h (+6.4 dB, sensitivity=0.8).",
+  "s3": "The \u03b1 activity is present in 0% of each epoch (transient), with quiescent eye movements (REM 0% active) and atonic muscle tone.",
+  "s4": "This is partially coherent with REM physiology: confirmed: EOG dominant, EMG atonic; missing: \u03b8 elevated."
+}

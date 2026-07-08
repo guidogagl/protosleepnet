@@ -1,0 +1,16 @@
+{
+  "prototype_idx": 1,
+  "n_samples": 256,
+  "n_real_init": 256,
+  "n_padded_init": 0,
+  "method": "hybrid",
+  "backbone": "st",
+  "model_name": "protosleepnet-st-3ch-mixer",
+  "codebook_size": 12,
+  "n_steps": 1000,
+  "lr": 0.01,
+  "mean_distance": 0.5016977787017822,
+  "std_distance": 0.05568147823214531,
+  "final_loss": 0.31734800338745117,
+  "data_driven_dir": "/leonardo_work/IscrC_SELFEEG/pretrained/protosleepnet-st-3ch-mixer/reconstruction_m12/data_driven"
+}

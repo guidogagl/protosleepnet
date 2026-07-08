@@ -1,0 +1,9 @@
+{
+  "prototype_idx": 8,
+  "dominant_class": "N3",
+  "rule_text": "Prototype 8 encodes N3 (100% pure) primarily through EEG (89%), with EOG (7%) and EMG (4%) contribution.\nIts EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=5.1) and absence of \u03b3 (+15.7 dB, sensitivity=3.0).\nThe \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and tonic muscle tone.\nThis is conflicting with N3 physiology: missing: \u03b4 elevated, EMG atonic.",
+  "s1": "Prototype 8 encodes N3 (100% pure) primarily through EEG (89%), with EOG (7%) and EMG (4%) contribution.",
+  "s2": "Its EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=5.1) and absence of \u03b3 (+15.7 dB, sensitivity=3.0).",
+  "s3": "The \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and tonic muscle tone.",
+  "s4": "This is conflicting with N3 physiology: missing: \u03b4 elevated, EMG atonic."
+}

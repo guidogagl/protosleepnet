@@ -1,0 +1,110 @@
+[
+  {
+    "prototype_idx": 0,
+    "dominant_class": "N2",
+    "rule_text": "Prototype 0 encodes N2 (100% pure) primarily through EEG (46%), with EOG (33%) and EMG (21%) contribution.\nIts EEG signature shows elevated \u03b2_h (+6.5 dB, sensitivity=2.4) and absence of \u03b4 (-11.0 dB, sensitivity=2.2).\nThe \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (SEM 0% active) and intermediate muscle tone.\nThis is partially coherent with N2 physiology: confirmed: \u03c3 relevant, EOG quiescent; missing: \u03c3 elevated. Note: model primarily uses \u03b2_h, atypical for N2.",
+    "s1": "Prototype 0 encodes N2 (100% pure) primarily through EEG (46%), with EOG (33%) and EMG (21%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b2_h (+6.5 dB, sensitivity=2.4) and absence of \u03b4 (-11.0 dB, sensitivity=2.2).",
+    "s3": "The \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (SEM 0% active) and intermediate muscle tone.",
+    "s4": "This is partially coherent with N2 physiology: confirmed: \u03c3 relevant, EOG quiescent; missing: \u03c3 elevated. Note: model primarily uses \u03b2_h, atypical for N2."
+  },
+  {
+    "prototype_idx": 1,
+    "dominant_class": "REM",
+    "rule_text": "Prototype 1 encodes REM (100% pure) primarily through EOG (50%), with EEG (45%) and EMG (5%) contribution.\nIts EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=2.9) and suppressed \u03b4 (-11.1 dB, sensitivity=1.3).\nThe \u03b2_h activity is present in 100% of each epoch (sustained), with quiescent eye movements (REM 0% active) and intermediate muscle tone.\nThis is conflicting with REM physiology: missing: EMG atonic, \u03b8 elevated. Note: model primarily uses \u03b2_h, atypical for REM.",
+    "s1": "Prototype 1 encodes REM (100% pure) primarily through EOG (50%), with EEG (45%) and EMG (5%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=2.9) and suppressed \u03b4 (-11.1 dB, sensitivity=1.3).",
+    "s3": "The \u03b2_h activity is present in 100% of each epoch (sustained), with quiescent eye movements (REM 0% active) and intermediate muscle tone.",
+    "s4": "This is conflicting with REM physiology: missing: EMG atonic, \u03b8 elevated. Note: model primarily uses \u03b2_h, atypical for REM."
+  },
+  {
+    "prototype_idx": 2,
+    "dominant_class": "N2",
+    "rule_text": "Prototype 2 encodes N2 (100% pure) primarily through EEG (61%), with EOG (28%) and EMG (12%) contribution.\nIts EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=6.0) and absence of \u03b3 (+15.6 dB, sensitivity=4.0).\nThe \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and intermediate muscle tone.\nThis is conflicting with N2 physiology: missing: \u03c3 elevated, \u03c3 relevant, EOG quiescent.",
+    "s1": "Prototype 2 encodes N2 (100% pure) primarily through EEG (61%), with EOG (28%) and EMG (12%) contribution.",
+    "s2": "Its EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=6.0) and absence of \u03b3 (+15.6 dB, sensitivity=4.0).",
+    "s3": "The \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and intermediate muscle tone.",
+    "s4": "This is conflicting with N2 physiology: missing: \u03c3 elevated, \u03c3 relevant, EOG quiescent."
+  },
+  {
+    "prototype_idx": 3,
+    "dominant_class": "W",
+    "rule_text": "Prototype 3 encodes W (100% pure) primarily through EOG (50%), with EEG (47%) and EMG (4%) contribution.\nIts EEG signature shows elevated \u03b3 (+15.6 dB, sensitivity=7.5) and elevated \u03b2_h (+6.4 dB, sensitivity=4.5).\nThe \u03b3 activity is present in 100% of each epoch (sustained), with active eye movements (Blink 100% active) and intermediate muscle tone.\nThis is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic.",
+    "s1": "Prototype 3 encodes W (100% pure) primarily through EOG (50%), with EEG (47%) and EMG (4%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b3 (+15.6 dB, sensitivity=7.5) and elevated \u03b2_h (+6.4 dB, sensitivity=4.5).",
+    "s3": "The \u03b3 activity is present in 100% of each epoch (sustained), with active eye movements (Blink 100% active) and intermediate muscle tone.",
+    "s4": "This is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic."
+  },
+  {
+    "prototype_idx": 4,
+    "dominant_class": "N3",
+    "rule_text": "Prototype 4 encodes N3 (100% pure) primarily through EEG (94%), with EOG (5%) and EMG (2%) contribution.\nIts EEG signature shows elevated \u03b3 (+15.8 dB, sensitivity=2.4) and elevated \u03b2_h (+6.4 dB, sensitivity=2.4).\nThe \u03b3 activity is present in 100% of each epoch (sustained), with active eye movements (SEM 0% active) and tonic muscle tone.\nThis is conflicting with N3 physiology: missing: \u03b4 elevated, \u03b4 dominant, EMG atonic. Note: model primarily uses \u03b3, atypical for N3.",
+    "s1": "Prototype 4 encodes N3 (100% pure) primarily through EEG (94%), with EOG (5%) and EMG (2%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b3 (+15.8 dB, sensitivity=2.4) and elevated \u03b2_h (+6.4 dB, sensitivity=2.4).",
+    "s3": "The \u03b3 activity is present in 100% of each epoch (sustained), with active eye movements (SEM 0% active) and tonic muscle tone.",
+    "s4": "This is conflicting with N3 physiology: missing: \u03b4 elevated, \u03b4 dominant, EMG atonic. Note: model primarily uses \u03b3, atypical for N3."
+  },
+  {
+    "prototype_idx": 5,
+    "dominant_class": "N2",
+    "rule_text": "Prototype 5 encodes N2 (100% pure) primarily through EOG (46%), with EEG (35%) and EMG (18%) contribution.\nIts EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=4.3) and absence of \u03b3 (+15.5 dB, sensitivity=2.3).\nThe \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and intermediate muscle tone.\nThis is partially coherent with N2 physiology: confirmed: \u03c3 elevated, EOG quiescent; missing: \u03c3 relevant.",
+    "s1": "Prototype 5 encodes N2 (100% pure) primarily through EOG (46%), with EEG (35%) and EMG (18%) contribution.",
+    "s2": "Its EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=4.3) and absence of \u03b3 (+15.5 dB, sensitivity=2.3).",
+    "s3": "The \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and intermediate muscle tone.",
+    "s4": "This is partially coherent with N2 physiology: confirmed: \u03c3 elevated, EOG quiescent; missing: \u03c3 relevant."
+  },
+  {
+    "prototype_idx": 6,
+    "dominant_class": "W",
+    "rule_text": "Prototype 6 encodes W (100% pure) primarily through EEG (61%), with EOG (26%) and EMG (12%) contribution.\nIts EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=7.0) and suppressed \u03b4 (-11.3 dB, sensitivity=4.5).\nThe \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (Blink 100% active) and atonic muscle tone.\nThis is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic, EOG active.",
+    "s1": "Prototype 6 encodes W (100% pure) primarily through EEG (61%), with EOG (26%) and EMG (12%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=7.0) and suppressed \u03b4 (-11.3 dB, sensitivity=4.5).",
+    "s3": "The \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (Blink 100% active) and atonic muscle tone.",
+    "s4": "This is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic, EOG active."
+  },
+  {
+    "prototype_idx": 7,
+    "dominant_class": "REM",
+    "rule_text": "Prototype 7 encodes REM (100% pure) primarily through EOG (67%), with EEG (25%) and EMG (9%) contribution.\nIts EEG signature shows suppressed \u03b1 (-3.8 dB, sensitivity=1.2) and elevated \u03b2_h (+6.4 dB, sensitivity=0.8).\nThe \u03b1 activity is present in 0% of each epoch (transient), with quiescent eye movements (REM 0% active) and atonic muscle tone.\nThis is partially coherent with REM physiology: confirmed: EOG dominant, EMG atonic; missing: \u03b8 elevated.",
+    "s1": "Prototype 7 encodes REM (100% pure) primarily through EOG (67%), with EEG (25%) and EMG (9%) contribution.",
+    "s2": "Its EEG signature shows suppressed \u03b1 (-3.8 dB, sensitivity=1.2) and elevated \u03b2_h (+6.4 dB, sensitivity=0.8).",
+    "s3": "The \u03b1 activity is present in 0% of each epoch (transient), with quiescent eye movements (REM 0% active) and atonic muscle tone.",
+    "s4": "This is partially coherent with REM physiology: confirmed: EOG dominant, EMG atonic; missing: \u03b8 elevated."
+  },
+  {
+    "prototype_idx": 8,
+    "dominant_class": "N3",
+    "rule_text": "Prototype 8 encodes N3 (100% pure) primarily through EEG (89%), with EOG (7%) and EMG (4%) contribution.\nIts EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=5.1) and absence of \u03b3 (+15.7 dB, sensitivity=3.0).\nThe \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and tonic muscle tone.\nThis is conflicting with N3 physiology: missing: \u03b4 elevated, EMG atonic.",
+    "s1": "Prototype 8 encodes N3 (100% pure) primarily through EEG (89%), with EOG (7%) and EMG (4%) contribution.",
+    "s2": "Its EEG signature shows absence of \u03b4 (-10.8 dB, sensitivity=5.1) and absence of \u03b3 (+15.7 dB, sensitivity=3.0).",
+    "s3": "The \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (SEM 0% active) and tonic muscle tone.",
+    "s4": "This is conflicting with N3 physiology: missing: \u03b4 elevated, EMG atonic."
+  },
+  {
+    "prototype_idx": 9,
+    "dominant_class": "W",
+    "rule_text": "Prototype 9 encodes W (100% pure) primarily through EEG (49%), with EOG (40%) and EMG (11%) contribution.\nIts EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=4.0) and suppressed \u03b4 (-11.3 dB, sensitivity=2.5).\nThe \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (Blink 97% active) and intermediate muscle tone.\nThis is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic, EOG active.",
+    "s1": "Prototype 9 encodes W (100% pure) primarily through EEG (49%), with EOG (40%) and EMG (11%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=4.0) and suppressed \u03b4 (-11.3 dB, sensitivity=2.5).",
+    "s3": "The \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (Blink 97% active) and intermediate muscle tone.",
+    "s4": "This is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic, EOG active."
+  },
+  {
+    "prototype_idx": 10,
+    "dominant_class": "N2",
+    "rule_text": "Prototype 10 encodes N2 (100% pure) primarily through EOG (56%), with EEG (32%) and EMG (12%) contribution.\nIts EEG signature shows absence of \u03b4 (-10.9 dB, sensitivity=2.9) and suppressed \u03b1 (-3.9 dB, sensitivity=1.2).\nThe \u03b4 activity is present in 0% of each epoch (transient), with quiescent eye movements (SEM 0% active) and intermediate muscle tone.\nThis is partially coherent with N2 physiology: confirmed: \u03c3 elevated, EOG quiescent; missing: \u03c3 relevant.",
+    "s1": "Prototype 10 encodes N2 (100% pure) primarily through EOG (56%), with EEG (32%) and EMG (12%) contribution.",
+    "s2": "Its EEG signature shows absence of \u03b4 (-10.9 dB, sensitivity=2.9) and suppressed \u03b1 (-3.9 dB, sensitivity=1.2).",
+    "s3": "The \u03b4 activity is present in 0% of each epoch (transient), with quiescent eye movements (SEM 0% active) and intermediate muscle tone.",
+    "s4": "This is partially coherent with N2 physiology: confirmed: \u03c3 elevated, EOG quiescent; missing: \u03c3 relevant."
+  },
+  {
+    "prototype_idx": 11,
+    "dominant_class": "W",
+    "rule_text": "Prototype 11 encodes W (100% pure) primarily through EEG (59%), with EOG (31%) and EMG (10%) contribution.\nIts EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=4.5) and elevated \u03b3 (+15.6 dB, sensitivity=3.2).\nThe \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (Blink 100% active) and atonic muscle tone.\nThis is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic.",
+    "s1": "Prototype 11 encodes W (100% pure) primarily through EEG (59%), with EOG (31%) and EMG (10%) contribution.",
+    "s2": "Its EEG signature shows elevated \u03b2_h (+6.4 dB, sensitivity=4.5) and elevated \u03b3 (+15.6 dB, sensitivity=3.2).",
+    "s3": "The \u03b2_h activity is present in 100% of each epoch (sustained), with moderate eye movements (Blink 100% active) and atonic muscle tone.",
+    "s4": "This is conflicting with W physiology: missing: \u03b1 elevated+relevant, EMG tonic."
+  }
+]

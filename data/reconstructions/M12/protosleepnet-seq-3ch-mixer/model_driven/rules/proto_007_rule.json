@@ -1,0 +1,9 @@
+{
+  "prototype_idx": 7,
+  "dominant_class": "W",
+  "rule_text": "Prototype 7 encodes W (100% pure) primarily through EEG (93%), with EOG (5%) and EMG (2%) contribution.\nIts EEG signature shows suppressed \u03b4 (-9.8 dB, sensitivity=8.4) and elevated \u03b3 (+18.0 dB, sensitivity=7.4).\nThe \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (Blink 100% active) and tonic muscle tone.\nThis is conflicting with W physiology: missing: \u03b1 elevated+relevant, EOG active. Note: model primarily uses \u03b4, atypical for W.",
+  "s1": "Prototype 7 encodes W (100% pure) primarily through EEG (93%), with EOG (5%) and EMG (2%) contribution.",
+  "s2": "Its EEG signature shows suppressed \u03b4 (-9.8 dB, sensitivity=8.4) and elevated \u03b3 (+18.0 dB, sensitivity=7.4).",
+  "s3": "The \u03b4 activity is present in 0% of each epoch (transient), with moderate eye movements (Blink 100% active) and tonic muscle tone.",
+  "s4": "This is conflicting with W physiology: missing: \u03b1 elevated+relevant, EOG active. Note: model primarily uses \u03b4, atypical for W."
+}

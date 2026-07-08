@@ -1,0 +1,85 @@
+{
+  "method": "hybrid",
+  "backbone": "seq",
+  "model_name": "protosleepnet-seq-3ch-mixer",
+  "n_prototypes": 12,
+  "n_per_proto": 256,
+  "n_steps": 500,
+  "lr": 0.01,
+  "final_loss": 8.680133819580078,
+  "data_driven_dir": "/leonardo_work/IscrC_SELFEEG/pretrained/protosleepnet-seq-3ch-mixer/reconstruction_per_dataset_m12/park_nap",
+  "per_prototype": [
+    {
+      "prototype": 0,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 2.5049571990966797
+    },
+    {
+      "prototype": 1,
+      "n_samples": 256,
+      "n_real_init": 248,
+      "mean_distance": 2.8582496643066406
+    },
+    {
+      "prototype": 2,
+      "n_samples": 256,
+      "n_real_init": 175,
+      "mean_distance": 3.3810837268829346
+    },
+    {
+      "prototype": 3,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 2.616424083709717
+    },
+    {
+      "prototype": 4,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 3.1387534141540527
+    },
+    {
+      "prototype": 5,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 2.231110095977783
+    },
+    {
+      "prototype": 6,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 3.2865285873413086
+    },
+    {
+      "prototype": 7,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 1.4647409915924072
+    },
+    {
+      "prototype": 8,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 3.340750217437744
+    },
+    {
+      "prototype": 9,
+      "n_samples": 256,
+      "n_real_init": 190,
+      "mean_distance": 2.664855480194092
+    },
+    {
+      "prototype": 10,
+      "n_samples": 256,
+      "n_real_init": 20,
+      "mean_distance": 3.6431267261505127
+    },
+    {
+      "prototype": 11,
+      "n_samples": 256,
+      "n_real_init": 256,
+      "mean_distance": 2.567046880722046
+    }
+  ]
+}

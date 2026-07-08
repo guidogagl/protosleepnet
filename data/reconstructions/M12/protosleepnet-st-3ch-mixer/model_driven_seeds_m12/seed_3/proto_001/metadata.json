@@ -1,0 +1,13 @@
+{
+  "prototype_idx": 1,
+  "n_samples": 256,
+  "method": "model_driven",
+  "backbone": "st",
+  "model_name": "protosleepnet-st-3ch-mixer",
+  "codebook_size": 12,
+  "n_steps": 1000,
+  "lr": 0.01,
+  "mean_distance": 1.1877802610397339,
+  "std_distance": 0.19428285956382751,
+  "final_loss": 2.35495924949646
+}
