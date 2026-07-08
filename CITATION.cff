@@ -12,6 +12,15 @@ repository-code: "https://github.com/guidogagl/protosleepnet"
 license: MIT
 version: "1.0.0"
 # doi: "10.5281/zenodo.XXXXXXX"   # TODO: fill Zenodo concept DOI at release
+references:
+  - type: software
+    title: "PhysioEx: a Python library for explainable sleep staging"
+    authors:
+      - family-names: Gagliardi
+        given-names: Guido
+    repository-code: "https://github.com/guidogagl/physioex"
+    version: "2.0.0"
+    notes: "Provides the ProtoSleepNet model, data loaders, preprocessing, splits, seeds and metrics used by this repository."
 preferred-citation:
   type: article
   title: "Prototype-based interpretable sleep staging with physiologically meaningful sub-stage pattern discovery"

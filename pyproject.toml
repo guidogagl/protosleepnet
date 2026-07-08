@@ -32,3 +32,7 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+markers = ["slow: tests that hit the network (HuggingFace); run with --runslow"]
+testpaths = ["tests"]

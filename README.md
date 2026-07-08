@@ -1,52 +1,67 @@
 # ProtoSleepNet
 
+[![Paper](https://img.shields.io/badge/npj%20Digital%20Medicine-in%20press-b31b1b)](https://www.nature.com/npjdigitalmed/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
+[![Powered by physioex](https://img.shields.io/badge/powered%20by-physioex%20v2.0.0-6f42c1)](https://github.com/guidogagl/physioex)
+<!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)  -- minted at release -->
+
 Code for **"Prototype-based interpretable sleep staging with physiologically
-meaningful sub-stage pattern discovery"** (ProtoSleepNet), in publication at
+meaningful sub-stage pattern discovery"** (ProtoSleepNet), in press at
 *npj Digital Medicine*.
 
 ProtoSleepNet wraps a sleep-staging backbone (SeqSleepNet or SleepTransformer)
 with a **Prototype Sub-Stage (PSS)** module: per-channel encoding, modality
 embeddings, inverse-accuracy channel dropout, a Transformer channel mixer and a
 dual-residual path, yielding contextualized epoch embeddings that are quantized
-into a small, interpretable **prototype codebook**. The prototypes are shown to
-carry physiologically meaningful, AASM-coherent sub-stage patterns and to
-support exploratory clinical probing (Alzheimer's, Parkinson's).
+into a small, interpretable **prototype codebook**. The prototypes carry
+physiologically meaningful, AASM-coherent sub-stage patterns and support
+exploratory clinical probing (Alzheimer's, Parkinson's).
 
 ![ProtoSleepNet](docs/figures/schema.png)
 
+> **Built on [physioex](https://github.com/guidogagl/physioex) v2.0.0.**
+> <a href="https://github.com/guidogagl/physioex"><img src="https://raw.githubusercontent.com/guidogagl/physioex/refs/heads/main/docs/assets/images/logo.svg" width="180px" alt="physioex"></a>
+>
 > The model architecture, data loaders, preprocessing, dataset splits, seeds and
-> evaluation live in the [`physioex`](https://github.com/guidogagl/physioex)
-> library (**v2.0.0**). This repository holds the **experiment pipeline** that
-> produced every figure and table in the paper.
+> evaluation metrics all live in `physioex`. **This** repository holds only the
+> **experiment pipeline** that produced every figure and table in the paper.
 
 ## Installation
 
 ```bash
-conda env create -f environment.yml && conda activate protosleepnet
-# or: pip install -r requirements.txt   (Python 3.12, physioex==2.0.0)
+conda env create -f environment.yml && conda activate protosleepnet   # optional
+pip install -e .                     # installs the `protosleepnet` package + physioex==2.0.0
 ```
 
-Scripts import `physioex` (installed) and their local siblings, so run each from
-inside its directory (e.g. `cd src/protosleepnet && python train.py ...`).
+Requires Python ≥ 3.10. After `pip install -e .` every script runs as a module
+from the repo root — **one** convention throughout:
+
+```bash
+python -m protosleepnet.train --help
+python -m protosleepnet.figure_reconstruction.spectral_signature --help
+```
 
 ## Pretrained weights
 
-Weights are on the HuggingFace Hub under `4rooms/physioex` and load via physioex:
+Weights are on the HuggingFace Hub under [`4rooms/physioex`](https://huggingface.co/4rooms/physioex)
+and load through physioex:
 
 ```python
 from physioex.models import load_from_pretrained
-model = load_from_pretrained("protosleepnet-st-3ch-mixer", verbose=True)  # PST
-# also: "protosleepnet-seq-3ch-mixer" (PSN)
+model = load_from_pretrained("protosleepnet-st-3ch-mixer")   # PST (SleepTransformer backbone)
+# also: "protosleepnet-seq-3ch-mixer"                        # PSN (SeqSleepNet backbone)
 # input  (batch, L, 3, 29, 129) STFT log-power (EEG/EOG/EMG); output (batch, L, 5) AASM logits
 ```
 
-`bash reproduce.sh` runs a smoke path (load weights -> forward pass -> one figure).
+`bash reproduce.sh` runs a smoke path (load weights → forward pass → regenerate one figure).
 
 ## Data
 
-11 PSG datasets / 20 dataset-sources (12,317 subjects). Raw data is **not**
-redistributed here — obtain it from the sources below and preprocess with
-physioex; see `src/protosleepnet/*/preprocessing` usage and `examples/slurm`.
+11 PSG datasets / 20 dataset-sources (12,317 subjects). Raw recordings are **not**
+redistributed here — obtain them from the sources below and preprocess them with
+**physioex** (this repo depends on physioex's preprocessing; it ships none of its own).
+See the physioex docs and the launchers in `examples/slurm/`.
 
 | Datasets | Access |
 |---|---|
@@ -55,42 +70,71 @@ physioex; see `src/protosleepnet/*/preprocessing` usage and `examples/slurm`.
 | MASS, DCSM | open on request |
 | ASD (Alzheimer), KPD (Parkinson) | KU Leuven — restricted (contact authors; ethics S61792/S70708) |
 
+## Configuration (environment variables)
+
+Scripts read paths from the environment so no absolute paths are baked in:
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `PROTOSLEEPNET_DATA` / `EXPERIMENT_DIR` | root for predictions, embeddings, reconstruction outputs | `data` |
+| `PROTOSLEEPNET_MODELS` | checkpoints / training stats | `<DATA>/models` |
+| `PROTO_RECON_SRC` | reconstruction source arrays (optional; else symlink `reconstructions_bulk/`) | — |
+| `PHYSIOEX_ROOT` | physioex checkout (only if running physioex from source, not pip) | — |
+
+Cluster launchers additionally source `examples/slurm/env.sh` (copy from
+`examples/slurm/env.sh.example`).
+
 ## Repository layout
 
 ```
-src/protosleepnet/
-  train.py, test_*.py, extract_*.py, seed_*.py   # staging + seed-stability
-  ablation/  baselines/                          # ablation & residual/mixer variants
-  posthoc_prototypes/  proto-reconstruction/     # VQ codebook learning + reconstruction
-  fix-alzheimer/  probing/                        # OOD (AD/PD) + clinical probing (compute)
-  plot/                                           # portable figure scripts (from predictions)
-  figure_reconstruction/                          # prototype cards / rules / spectral signatures
-  clinical_probing/                               # AD/PD feature analysis + staging probe
+src/protosleepnet/            # installable package (run as python -m protosleepnet.<mod>)
+  train.py  test_*.py  extract_*.py  seed_*.py   # staging training/eval + seed-stability
+  build_protosleepnet.py                          # shared model factory
+  ablation/  baselines/                           # ablation & residual/mixer/dropout variants
+  posthoc_prototypes/  proto_reconstruction/      # VQ codebook learning + reconstruction
+  figure_reconstruction/                          # prototype cards / rules / spectral & relevance signatures
+  probing/  clinical_probing/                      # clinical probing (AD/PD) compute + analysis
+  ood_disease/                                     # OOD disease evaluation / transport
+  plot/                                            # portable figure scripts (from predictions)
 examples/slurm/    # cluster launchers (Leonardo/Sofia); copy env.sh.example -> env.sh
 notebooks/         # global_explain.ipynb, local_explain.ipynb
-data/              # small committed figure-source JSON (see below)
+data/              # small committed figure-source JSON only (see below)
+tests/             # smoke tests (import graph + optional pretrained forward pass)
 ```
 
-Large artifacts (predictions, embeddings, reconstruction arrays, checkpoints)
-are **not** in git — they live in a backup root and are wired in via the
-git-ignored `json/` and `reconstructions_bulk/` symlinks. Only ~small
-figure-source JSON is committed under `data/`.
+Large artifacts (predictions, embeddings, reconstruction arrays, checkpoints) are
+**not** in git — they live in a backup root and are wired in via the git-ignored
+`json/` and `reconstructions_bulk/` symlinks. Only small figure-source JSON is
+committed under `data/`.
 
-## Reproducing the paper (Figure/Table -> experiment -> code)
+## Reproducing the paper (Figure/Table → experiment → command)
 
-| Paper asset | Experiment | Code |
+Each command below is the entry point; pass `--help` for its options. Full
+experiment settings (M value, seeds, datasets) are documented per-script.
+
+| Paper asset | Experiment | Command |
 |---|---|---|
-| Fig 2a; Supp §1 | In-domain + OOD staging, per-class, confusion, stats | `train.py`, `test_pretrained.py`, `clinical_probing/staging/extract_embeddings.py` |
-| Fig 2b; Supp §3,§8 | M-sweep, residual/VQ robustness, VQ methods, randomization | `posthoc_prototypes/`, `baselines/`, `plot/residual*.py`, `plot/vq.py` |
-| Supp §2 | Ablation + occlusion robustness | `ablation/`, `test_occlusion*.py`, `plot/occlusion*.py` |
-| Fig 4; Supp §5,§6 | Prototype reconstruction (data/model/hybrid) + cross-dataset | `proto-reconstruction/`, `figure_reconstruction/compute_*`, `figure_reconstruction/prototype_card*.py` |
-| Fig 3; Tab 1,2; Supp §4,§6 | Codebook summaries, band-ablation rules, coherence, local IG | `figure_reconstruction/{combinatorial_ablation,rule_learning,spectral_signature,relevance_signature,compute_local_explanations}.py` |
-| Supp §9 | Seed stability | `seed_*.py` |
-| Fig 5; Supp §7 | Clinical probing (AD/PD) | `clinical_probing/{parkinsons,alzheimers}/*`, `fix-alzheimer/` |
+| Fig 2a; Supp §1 | In-domain + OOD staging, per-class, confusion, stats | `python -m protosleepnet.train`; `python -m protosleepnet.test_pretrained` |
+| Fig 2b; Supp §3,§8 | M-sweep, residual/VQ robustness, VQ methods, randomization | `python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq`; `python -m protosleepnet.plot.residual`; `python -m protosleepnet.plot.vq` |
+| Supp §2 | Ablation + occlusion robustness | `python -m protosleepnet.ablation.train_ablation`; `python -m protosleepnet.plot.occlusion` |
+| Fig 4; Supp §5,§6 | Prototype reconstruction (data/model/hybrid) + cross-dataset | `python -m protosleepnet.proto_reconstruction.data_driven` (`.model_driven`, `.hybrid`); `python -m protosleepnet.figure_reconstruction.compute_cross_dataset_metrics` |
+| Fig 3; Tab 1,2; Supp §4,§6 | Codebook summaries, band-ablation rules, coherence, local IG | `python -m protosleepnet.figure_reconstruction.{rule_learning,spectral_signature,relevance_signature,compute_local_explanations,combinatorial_ablation}` |
+| Supp §9 | Seed stability | `python -m protosleepnet.seed_stability_pipeline` |
+| Fig 5; Supp §7 | Clinical probing (AD/PD) | `python -m protosleepnet.clinical_probing.staging.extract_embeddings`; `python -m protosleepnet.clinical_probing.parkinsons.analyze_features`; `python -m protosleepnet.ood_disease.eval_ood` |
 
 Manuscript figure/table *assembly* (LaTeX-coupled emitters) is kept out of this
 repo, with the paper sources.
 
+## Tests
+
+```bash
+pip install -e . pytest
+pytest                 # import-graph smoke test (no network)
+pytest --runslow       # also pull weights from HuggingFace and run a forward pass
+```
+
 ## Citation
 
-See `CITATION.cff` (paper + software DOI). License: MIT (`LICENSE`).
+If you use this code, please cite the paper and the software — see `CITATION.cff`
+(paper + software Zenodo DOI). This work builds on
+[physioex](https://github.com/guidogagl/physioex) v2.0.0. License: MIT (`LICENSE`).

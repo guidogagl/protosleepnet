@@ -5,6 +5,8 @@
 # (Figure/Table -> experiment -> script map).
 set -euo pipefail
 
+# Prerequisite: pip install -e .  (installs the `protosleepnet` package + physioex==2.0.0)
+
 echo "[1/2] Loading pretrained ProtoSleepNet (PST) from HuggingFace 4rooms/physioex ..."
 python - <<'PY'
 from physioex.models import load_from_pretrained
@@ -18,7 +20,7 @@ PY
 
 echo "[2/2] Regenerating a figure from committed figure-source data (if present) ..."
 if [ -d data/reconstructions/M12 ]; then
-  python src/protosleepnet/figure_reconstruction/spectral_signature.py data/reconstructions/M12 --figures-only || true
+  python -m protosleepnet.figure_reconstruction.spectral_signature data/reconstructions/M12 --figures-only || true
 else
   echo "  (skip) data/reconstructions/M12 not populated — see README 'Data'."
 fi
