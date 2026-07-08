@@ -32,7 +32,7 @@ OUTPUT_DIR=$EMB_DIR
 echo "VQ K-Means test: model=$MODEL, M=$M"
 echo "Codebook: $CODEBOOK"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/test_posthoc_prototypes.py \
+python -m protosleepnet.posthoc_prototypes.test_posthoc_prototypes \
     --model_dir $PRETRAINED/$MODEL \
     --method vq \
     --codebook_path $CODEBOOK \

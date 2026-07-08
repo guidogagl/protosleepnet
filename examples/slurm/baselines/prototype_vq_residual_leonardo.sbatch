@@ -29,8 +29,7 @@ export PHYSIOEX_CACHE_DIR=/dev/shm/physioex_cache
 echo "Cache copied: $(du -sh /dev/shm/physioex_cache | cut -f1)"
 
 cd ${PHYSIOEX_REPO}
-SCRIPTS=examples/pretrained/protosleepnet-gagliardi/baselines
-
+SCRIPTS=protosleepnet.baselines
 # Find checkpoint
 CKPT=$(ls "$MODEL_DIR/checkpoints/"epoch=*.pt 2>/dev/null | head -1)
 if [ -z "$CKPT" ]; then
@@ -44,7 +43,7 @@ EMB_DIR="$MODEL_DIR/embeddings"
 # Step 1: Extract embeddings (skip if already done)
 if [ ! -d "$EMB_DIR/train" ]; then
     echo "=== Extracting embeddings ==="
-    python $SCRIPTS/extract_residual_embeddings.py \
+    python -m ${SCRIPTS}.extract_residual_embeddings \
         --build_module "$BUILD_MODULE" \
         --checkpoint "$CKPT" \
         --output_dir "$EMB_DIR" \
@@ -63,12 +62,12 @@ for M in 5 8 12 15 24 32 48 65 80 100; do
     KMEANS_CB="$EMB_DIR/codebook_vq_kmeans_m${M}.npy"
     if [ ! -f "$KMEANS_CB" ]; then
         echo "--- K-Means ---"
-        python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq_kmeans.py \
+        python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq_kmeans \
             --emb_dir "$EMB_DIR" --n_prototypes $M
     fi
 
     echo "--- Test K-Means ---"
-    python $SCRIPTS/test_residual_prototypes.py \
+    python -m ${SCRIPTS}.test_residual_prototypes \
         --build_module "$BUILD_MODULE" --checkpoint "$CKPT" \
         --codebook_path "$KMEANS_CB" \
         --output_dir "$MODEL_DIR/vq_kmeans_results" \
@@ -76,14 +75,14 @@ for M in 5 8 12 15 24 32 48 65 80 100; do
 
     # ── 2. K-Means init + supervised refinement ──
     echo "--- VQ K-Means+supervised ---"
-    python $SCRIPTS/learn_residual_prototypes_vq.py \
+    python -m ${SCRIPTS}.learn_residual_prototypes_vq \
         --build_module "$BUILD_MODULE" --checkpoint "$CKPT" \
         --emb_dir "$EMB_DIR" --n_prototypes $M \
         --output_dir "$EMB_DIR" --gpu_id 0 --seq_len 20
 
     VQ_CB="$EMB_DIR/codebook_vq_m${M}.npy"
     echo "--- Test VQ K-Means+supervised ---"
-    python $SCRIPTS/test_residual_prototypes.py \
+    python -m ${SCRIPTS}.test_residual_prototypes \
         --build_module "$BUILD_MODULE" --checkpoint "$CKPT" \
         --codebook_path "$VQ_CB" \
         --output_dir "$MODEL_DIR/vq_supervised_results" \
@@ -91,14 +90,14 @@ for M in 5 8 12 15 24 32 48 65 80 100; do
 
     # ── 3. Learned (no K-Means init) + supervised refinement ──
     echo "--- VQ learned ---"
-    python $SCRIPTS/learn_residual_prototypes_vq.py \
+    python -m ${SCRIPTS}.learn_residual_prototypes_vq \
         --build_module "$BUILD_MODULE" --checkpoint "$CKPT" \
         --emb_dir "$EMB_DIR" --n_prototypes $M \
         --output_dir "$EMB_DIR" --gpu_id 0 --seq_len 20 --no_kmeans_init
 
     LEARNED_CB="$EMB_DIR/codebook_vq_learned_m${M}.npy"
     echo "--- Test VQ learned ---"
-    python $SCRIPTS/test_residual_prototypes.py \
+    python -m ${SCRIPTS}.test_residual_prototypes \
         --build_module "$BUILD_MODULE" --checkpoint "$CKPT" \
         --codebook_path "$LEARNED_CB" \
         --output_dir "$MODEL_DIR/vq_learned_results" \

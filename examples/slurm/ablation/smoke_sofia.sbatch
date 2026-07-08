@@ -21,7 +21,7 @@ mkdir -p "$OUTDIR"
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/train.py \
+python -m protosleepnet.train \
     --gpu_id 0 \
     --max_epochs 1 \
     --output_dir "$OUTDIR" \

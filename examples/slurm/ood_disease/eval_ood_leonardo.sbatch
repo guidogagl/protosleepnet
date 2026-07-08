@@ -6,23 +6,20 @@
 #SBATCH --mem=64G
 #SBATCH --account=<SLURM_ACCOUNT>
 #SBATCH --qos=boost_qos_lprod
-#SBATCH --time=02:00:00
-#SBATCH --job-name=eval-st-1ch
+#SBATCH --time=01:00:00
+#SBATCH --job-name=eval-ood-alz
 #SBATCH --output=${PSN_LOGS}/%x_%j.out
 
-module load profile/deeplrn
-module load cineca-ai/4.0.0
 source ${PSN_VENV_ACTIVATE}
 
 export PYTHONUNBUFFERED=1
 export HF_HUB_OFFLINE=1
+export CUDA_VISIBLE_DEVICES=0
 export PHYSIOEX_CACHE_DIR=${PHYSIOEX_CACHE_DIR}
-
-OUTDIR=${PSN_PRETRAINED}/sleeptransformer-phan-1ch-eval
-mkdir -p "$OUTDIR"
 
 cd ${PHYSIOEX_REPO}
 
-python -m protosleepnet.baselines.test_st_1ch \
+python -m protosleepnet.ood_disease.eval_ood \
     --gpu_id 0 \
-    --output_dir "$OUTDIR"
+    --models_dir ${PSN_PRETRAINED} \
+    --output_dir ${PSN_PRETRAINED}/fix-alzheimer

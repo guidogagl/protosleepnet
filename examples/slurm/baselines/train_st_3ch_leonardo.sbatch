@@ -31,7 +31,7 @@ mkdir -p "$OUTDIR"
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/baselines/train_st_3ch.py \
+python -m protosleepnet.baselines.train_st_3ch \
     --gpu_id 0 \
     --output_dir "$OUTDIR" \
     --num_workers 14

@@ -28,8 +28,7 @@ export PHYSIOEX_CACHE_DIR=/dev/shm/physioex_cache
 echo "Cache copied: $(du -sh /dev/shm/physioex_cache | cut -f1)"
 
 cd ${PHYSIOEX_REPO}
-SCRIPTS=examples/pretrained/protosleepnet-gagliardi/baselines
-
+SCRIPTS=protosleepnet.baselines
 # Find checkpoint
 CKPT=$(ls "$MODEL_DIR/checkpoints/"epoch=*.pt 2>/dev/null | head -1)
 if [ -z "$CKPT" ]; then
@@ -43,7 +42,7 @@ EMB_DIR="$MODEL_DIR/embeddings"
 # Step 1: Extract embeddings (skip if already done)
 if [ ! -d "$EMB_DIR/train" ]; then
     echo "=== Extracting embeddings ==="
-    python $SCRIPTS/extract_residual_embeddings.py \
+    python -m ${SCRIPTS}.extract_residual_embeddings \
         --build_module "$BUILD_MODULE" \
         --checkpoint "$CKPT" \
         --output_dir "$EMB_DIR" \
@@ -53,7 +52,7 @@ else
 fi
 
 # Step 2+3: For each M, learn K-Means codebook + test
-KMEANS_SCRIPT=examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq_kmeans.py
+KMEANS_SCRIPT=-m protosleepnet.posthoc_prototypes.learn_prototypes_vq_kmeans
 
 for M in 5 8 12 15 24 32 48 65 80 100; do
     echo ""
@@ -71,7 +70,7 @@ for M in 5 8 12 15 24 32 48 65 80 100; do
     fi
 
     # Test with VQ prototypes
-    python $SCRIPTS/test_residual_prototypes.py \
+    python -m ${SCRIPTS}.test_residual_prototypes \
         --build_module "$BUILD_MODULE" \
         --checkpoint "$CKPT" \
         --codebook_path "$CODEBOOK" \

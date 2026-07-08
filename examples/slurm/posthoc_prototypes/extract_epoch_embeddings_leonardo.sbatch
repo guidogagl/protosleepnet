@@ -27,7 +27,7 @@ cd ${PHYSIOEX_REPO}
 
 PRETRAINED=${PSN_PRETRAINED}
 OUTPUT_DIR=${PSN_PRETRAINED}/posthoc_embeddings
-SCRIPT=examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/extract_epoch_embeddings.py
+SCRIPT=-m protosleepnet.posthoc_prototypes.extract_epoch_embeddings
 
 # Extract epoch embeddings from both baselines
 echo ""

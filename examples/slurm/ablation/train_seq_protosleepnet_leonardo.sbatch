@@ -27,7 +27,7 @@ echo "Cache copied: $(du -sh /dev/shm/physioex_cache | cut -f1)"
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/ablation/train_ablation_seqsleepnet.py \
+python -m protosleepnet.ablation.train_ablation_seqsleepnet \
     --variant protosleepnet \
     --datasets shhs \
     --gpu_id 0 \

@@ -23,6 +23,6 @@ mkdir -p "$OUTDIR"
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/baselines/test_seq_1ch.py \
+python -m protosleepnet.baselines.test_seq_1ch \
     --gpu_id 0 \
     --output_dir "$OUTDIR"

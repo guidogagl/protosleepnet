@@ -32,7 +32,7 @@ echo "Cache copied: $(du -sh /dev/shm/physioex_cache | cut -f1)"
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/train.py \
+python -m protosleepnet.train \
     --datasets shhs \
     --max_epochs 1 \
     --gpu_id 0 \

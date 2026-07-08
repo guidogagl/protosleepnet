@@ -29,7 +29,7 @@ cd ${PHYSIOEX_REPO}
 RESULTS=${PSN_RESULTS}/seed_stability/st
 MODELS=${PSN_PRETRAINED}/protosleepnet-st-3ch-mixer
 LOGS=${PSN_LOGS}
-RECON_SCRIPT=examples/pretrained/protosleepnet-gagliardi/proto-reconstruction/data_driven.py
+RECON_SCRIPT=-m protosleepnet.proto_reconstruction.data_driven
 
 echo "=== Seed reconstruction: data-driven, ST-SHHS, 7 seeds on 2 GPUs ==="
 echo "=== Running 2 parallel streams (1 per GPU) to avoid SHHS I/O thrashing ==="

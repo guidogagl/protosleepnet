@@ -46,7 +46,7 @@ for i in "${!SEEDS[@]}"; do
     CUDA_VISIBLE_DEVICES=$GPU_ID \
     OMP_NUM_THREADS=2 \
     MKL_NUM_THREADS=2 \
-    python examples/pretrained/protosleepnet-gagliardi/seed_stability_pipeline.py \
+    python -m protosleepnet.seed_stability_pipeline \
         --backbone st --dataset shhs --seed $S \
         --output_dir $OUTDIR --gpu_id 0 --n_prototypes 12 \
         --num_workers 0 \

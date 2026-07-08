@@ -30,7 +30,7 @@ CODEBOOK=$EMB_DIR/codebook_vq_m${M}.npy
 
 echo "Paired test: model=$MODEL, M=$M"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/test_vq_paired.py \
+python -m protosleepnet.posthoc_prototypes.test_vq_paired \
     --model_dir $PRETRAINED/$MODEL \
     --codebook_path $CODEBOOK \
     --output_dir $EMB_DIR \

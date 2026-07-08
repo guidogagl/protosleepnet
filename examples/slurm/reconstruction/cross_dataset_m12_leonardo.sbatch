@@ -45,8 +45,7 @@ export PHYSIOEX_CACHE_DIR=/dev/shm/physioex_cache
 
 # Paths
 PRETRAINED=${PSN_PRETRAINED}
-CODE=${PHYSIOEX_REPO}/examples/pretrained/protosleepnet-gagliardi/proto-reconstruction
-
+CODE=protosleepnet.proto_reconstruction
 # Resolve backbone-specific paths
 if [ "$BACKBONE" = "seq" ]; then
     MODEL_NAME="protosleepnet-seq-3ch-mixer"
@@ -87,7 +86,7 @@ esac
 
 echo "Extra args: $EXTRA_ARGS"
 
-python ${CODE}/data_driven.py \
+python -m ${CODE}.data_driven \
     --backbone $BACKBONE \
     --m 12 \
     --top_k 256 \

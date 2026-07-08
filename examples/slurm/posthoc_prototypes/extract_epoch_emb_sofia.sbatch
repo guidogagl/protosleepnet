@@ -44,7 +44,7 @@ EXTRA_ARGS=""
 
 echo "Epoch embedding extraction: model=$MODEL_NAME, dataset=$DS, channels=$CHANNELS $EXTRA_ARGS"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/extract_epoch_embeddings.py \
+python -m protosleepnet.posthoc_prototypes.extract_epoch_embeddings \
     --model_name $MODEL_NAME \
     --output_dir $OUTPUT_DIR \
     --dataset $DS \

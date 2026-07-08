@@ -18,7 +18,7 @@ EMB_DIR="${PSN_WORK}/posthoc_embeddings/${MODEL_NAME}"
 
 echo "K-Means codebook: model=$MODEL_NAME, M=$M"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq_kmeans.py \
+python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq_kmeans \
     --emb_dir $EMB_DIR \
     --n_prototypes $M \
     --output_dir $EMB_DIR

@@ -33,6 +33,6 @@ S=${SEEDS[$SLURM_ARRAY_TASK_ID]}
 
 echo "Array task $SLURM_ARRAY_TASK_ID → seed $S (ST/SHHS), all M values"
 
-python examples/pretrained/protosleepnet-gagliardi/seed_recon_all_m.py \
+python -m protosleepnet.seed_recon_all_m \
     --seed_dir $RESULTS/seed_$S \
     --backbone st --gpu_id 0 --top_k 256

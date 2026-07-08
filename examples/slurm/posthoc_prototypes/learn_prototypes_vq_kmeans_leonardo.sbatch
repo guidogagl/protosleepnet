@@ -22,7 +22,7 @@ EMB_DIR=$PRETRAINED/posthoc_embeddings/$MODEL
 
 echo "VQ K-Means: model=$MODEL, M=$M"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq_kmeans.py \
+python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq_kmeans \
     --emb_dir $EMB_DIR \
     --n_prototypes $M \
     --output_dir $EMB_DIR

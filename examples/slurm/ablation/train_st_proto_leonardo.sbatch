@@ -30,7 +30,7 @@ cd ${PHYSIOEX_REPO}
 
 echo "Training ST protosleepnet with M=${M} prototypes"
 
-python examples/pretrained/protosleepnet-gagliardi/ablation/train_ablation.py \
+python -m protosleepnet.ablation.train_ablation \
     --variant protosleepnet \
     --n_prototypes ${M} \
     --datasets shhs \

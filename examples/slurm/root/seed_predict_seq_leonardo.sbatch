@@ -43,7 +43,7 @@ for i in "${!SEEDS[@]}"; do
     CUDA_VISIBLE_DEVICES=$GPU_ID \
     OMP_NUM_THREADS=2 \
     MKL_NUM_THREADS=2 \
-    python examples/pretrained/protosleepnet-gagliardi/convert_and_predict_seeds.py \
+    python -m protosleepnet.convert_and_predict_seeds \
         --seed_dir $RESULTS/seed_$S \
         --backbone seq --dataset mass --seq_len 20 --gpu_id 0 \
         > ${LOGS}/seed-pred_${SLURM_JOB_ID}_s${S}.log 2>&1 &

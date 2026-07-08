@@ -18,8 +18,7 @@ export HF_HUB_OFFLINE=1
 export PYTHONNOUSERSITE=1
 
 PRETRAINED=${PSN_PRETRAINED}
-CODE=${PHYSIOEX_REPO}/examples/pretrained/protosleepnet-gagliardi/proto-reconstruction
-
+CODE=protosleepnet.proto_reconstruction
 if [ "$BACKBONE" = "seq" ]; then
     MODEL_NAME="protosleepnet-seq-3ch-mixer"
     CKPT="${PRETRAINED}/${MODEL_NAME}/model.pt"
@@ -38,7 +37,7 @@ echo "=== Model-driven M=12 seed=${SEED} ==="
 echo "Backbone: $BACKBONE | Seed: $SEED"
 echo "Output: $OUTPUT"
 
-python ${CODE}/model_driven.py \
+python -m ${CODE}.model_driven \
     --backbone $BACKBONE \
     --m 12 \
     --checkpoint_path $CKPT \

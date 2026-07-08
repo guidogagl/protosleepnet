@@ -31,7 +31,7 @@ cd ${PHYSIOEX_REPO}
 RESULTS=${PSN_RESULTS}/seed_stability/seq
 MODELS=${PSN_PRETRAINED}/protosleepnet-seq-3ch-mixer
 LOGS=${PSN_LOGS}
-RECON_SCRIPT=examples/pretrained/protosleepnet-gagliardi/proto-reconstruction/data_driven.py
+RECON_SCRIPT=-m protosleepnet.proto_reconstruction.data_driven
 
 echo "=== Seed reconstruction: data-driven, SEQ, 7 seeds on 2 GPUs ==="
 

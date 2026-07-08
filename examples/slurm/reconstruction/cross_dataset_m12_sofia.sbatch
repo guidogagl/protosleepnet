@@ -23,7 +23,7 @@ export PHYSIOEX_DATA=${PSN_WORK}/raw_data
 export PHYSIOEX_CACHE_DIR=${PHYSIOEX_CACHE_DIR}
 
 # Paths
-CODE=$WORK/physioex/examples/pretrained/protosleepnet-gagliardi/proto-reconstruction
+CODE=protosleepnet.proto_reconstruction
 PRETRAINED=${PSN_WORK}/pretrained
 
 # Resolve backbone-specific paths
@@ -64,7 +64,7 @@ esac
 
 echo "Extra args: $EXTRA_ARGS"
 
-python ${CODE}/data_driven.py \
+python -m ${CODE}.data_driven \
     --backbone $BACKBONE \
     --m 12 \
     --top_k 256 \

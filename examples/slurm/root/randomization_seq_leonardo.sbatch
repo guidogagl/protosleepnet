@@ -39,7 +39,7 @@ mkdir -p "$OUTDIR"
 
 echo "Array task $SLURM_ARRAY_TASK_ID → M=$M"
 
-python examples/pretrained/protosleepnet-gagliardi/test_prototype_randomization.py \
+python -m protosleepnet.test_prototype_randomization \
     --backbone seq \
     --checkpoint $MODELS/model.pt \
     --codebook_path $EMB/codebook_vq_kmeans_m${M}.npy \

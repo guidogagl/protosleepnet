@@ -19,7 +19,7 @@ export PYTHONNOUSERSITE=1
 
 cd ${PHYSIOEX_REPO}
 
-SCRIPT=examples/pretrained/protosleepnet-gagliardi/seed_mmd_analysis.py
+SCRIPT=-m protosleepnet.seed_mmd_analysis
 
 if [ $SLURM_ARRAY_TASK_ID -eq 0 ]; then
     echo "=== PSN (SEQ/MASS) ==="

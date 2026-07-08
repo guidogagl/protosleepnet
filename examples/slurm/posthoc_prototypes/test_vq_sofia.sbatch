@@ -45,7 +45,7 @@ EXTRA_ARGS=""
 [ -n "$COHORT" ] && EXTRA_ARGS="$EXTRA_ARGS --cohort $COHORT"
 [ -n "$VISIT" ] && EXTRA_ARGS="$EXTRA_ARGS --visit $VISIT"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/test_posthoc_prototypes.py \
+python -m protosleepnet.posthoc_prototypes.test_posthoc_prototypes \
     --model_name $MODEL_NAME \
     --method vq \
     --codebook_path $CODEBOOK \

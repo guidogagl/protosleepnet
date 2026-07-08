@@ -32,7 +32,7 @@ OUTPUT_DIR=$EMB_DIR
 echo "VQ training: model=$MODEL, M=$M, epochs=$N_EPOCHS"
 echo "Embeddings: $EMB_DIR"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq.py \
+python -m protosleepnet.learn_prototypes_vq \
     --model_dir $PRETRAINED/$MODEL \
     --emb_dir $EMB_DIR \
     --n_prototypes $M \

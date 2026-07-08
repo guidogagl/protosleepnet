@@ -7,7 +7,7 @@
 MODEL_DIR=${1:?Usage: bash extract_proto_embeddings_leonardo.sh /path/to/model_dir [seq|st]}
 BACKBONE=${2:-seq}
 
-SCRIPT=examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/extract_epoch_embeddings.py
+SCRIPT=-m protosleepnet.posthoc_prototypes.extract_epoch_embeddings
 OUTDIR=${MODEL_DIR}/posthoc_embeddings
 CHANNELS="EEG EOG EMG"
 CACHE=${PHYSIOEX_CACHE_DIR}

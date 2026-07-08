@@ -29,7 +29,7 @@ mkdir -p "$OUTDIR"
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/train.py \
+python -m protosleepnet.train \
     --backbone st \
     --dataset shhs \
     --n_channels 3 \

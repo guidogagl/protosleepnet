@@ -18,5 +18,5 @@ export HF_HUB_OFFLINE=1
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/extract_embeddings.py \
+python -m protosleepnet.extract_embeddings \
     --gpu_id 0 "$@"

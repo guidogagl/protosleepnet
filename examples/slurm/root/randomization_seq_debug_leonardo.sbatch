@@ -35,7 +35,7 @@ mkdir -p "$OUTDIR"
 
 echo "Debug run: M=5, n_random=2"
 
-python examples/pretrained/protosleepnet-gagliardi/test_prototype_randomization.py \
+python -m protosleepnet.test_prototype_randomization \
     --backbone seq \
     --checkpoint $MODELS/model.pt \
     --codebook_path $EMB/codebook_vq_kmeans_m5.npy \

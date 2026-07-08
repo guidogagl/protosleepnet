@@ -17,6 +17,6 @@ export PYTHONUNBUFFERED=1
 
 cd ${PHYSIOEX_REPO}
 
-python examples/pretrained/protosleepnet-gagliardi/test_pretrained.py \
+python -m protosleepnet.test_pretrained \
     --gpu_id 0 \
     --datasets shhs sleepedf

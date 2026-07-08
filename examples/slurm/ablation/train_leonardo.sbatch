@@ -32,14 +32,14 @@ VARIANT="${VARIANT:-baseline}"
 echo "Training variant: $VARIANT"
 
 if [ "$VARIANT" = "prosleepnet" ]; then
-    python examples/pretrained/protosleepnet-gagliardi/train.py \
+    python -m protosleepnet.train \
         --datasets shhs \
         --gpu_id 0 \
         --num_workers 14 \
         --output_dir ${PSN_PRETRAINED}/protosleepnet-gagliardi \
         --upload
 else
-    python examples/pretrained/protosleepnet-gagliardi/ablation/train_ablation.py \
+    python -m protosleepnet.ablation.train_ablation \
         --variant "$VARIANT" \
         --datasets shhs \
         --gpu_id 0 \

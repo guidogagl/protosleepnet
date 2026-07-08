@@ -31,7 +31,7 @@ OUTPUT_DIR=$PRETRAINED/posthoc_embeddings/$MODEL/probe_vq_m${M}/$DS_NAME
 
 echo "VQ probe: model=$MODEL, dataset=$DS_NAME, M=$M"
 
-python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/probe_posthoc_prototypes.py \
+python -m protosleepnet.posthoc_prototypes.probe_posthoc_prototypes \
     --model_dir $PRETRAINED/$MODEL \
     --codebook_path $CODEBOOK \
     --emb_dir $EMB_DIR \

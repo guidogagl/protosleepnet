@@ -2,7 +2,7 @@
 # Launch all cross-dataset M=12 reconstruction jobs on Leonardo
 # Usage: bash launch_cross_m12.sh [--dry-run]
 
-SBATCH_SCRIPT="${PHYSIOEX_REPO}/examples/pretrained/protosleepnet-gagliardi/proto-reconstruction/slurm/cross_dataset_m12_leonardo.sbatch"
+SBATCH_SCRIPT="examples/slurm/reconstruction/cross_dataset_m12_leonardo.sbatch"
 
 DRY_RUN=false
 [ "$1" = "--dry-run" ] && DRY_RUN=true

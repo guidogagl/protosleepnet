@@ -22,12 +22,12 @@ EMB_DIR="${PSN_WORK}/posthoc_embeddings/${MODEL_NAME}"
 echo "VQ learning: model=$MODEL_NAME, M=$M, method=$METHOD"
 
 if [ "$METHOD" = "kmeans" ]; then
-    python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq_kmeans.py \
+    python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq_kmeans \
         --emb_dir $EMB_DIR \
         --n_prototypes $M \
         --output_dir $EMB_DIR
 elif [ "$METHOD" = "vq_learned" ]; then
-    python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq.py \
+    python -m protosleepnet.learn_prototypes_vq \
         --model_name $MODEL_NAME \
         --emb_dir $EMB_DIR \
         --n_prototypes $M \
@@ -39,7 +39,7 @@ elif [ "$METHOD" = "vq_learned" ]; then
         --gpu_id 0 \
         --output_dir $EMB_DIR
 elif [ "$METHOD" = "vq" ]; then
-    python examples/pretrained/protosleepnet-gagliardi/posthoc_prototypes/learn_prototypes_vq.py \
+    python -m protosleepnet.learn_prototypes_vq \
         --model_name $MODEL_NAME \
         --emb_dir $EMB_DIR \
         --n_prototypes $M \
