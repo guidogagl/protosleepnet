@@ -12,7 +12,7 @@ into a small, interpretable **prototype codebook**. The prototypes are shown to
 carry physiologically meaningful, AASM-coherent sub-stage patterns and to
 support exploratory clinical probing (Alzheimer's, Parkinson's).
 
-![ProtoSleepNet](docs/figures/diagram.png)
+![ProtoSleepNet](docs/figures/schema.png)
 
 > The model architecture, data loaders, preprocessing, dataset splits, seeds and
 > evaluation live in the [`physioex`](https://github.com/guidogagl/physioex)
