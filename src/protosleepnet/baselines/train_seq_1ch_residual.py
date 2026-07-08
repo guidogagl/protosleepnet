@@ -146,8 +146,8 @@ def main():
     print(f"Saved model weights to {model_path}")
 
     config = {
-        "model_class": "residual_model:ResidualSequenceWrapper",
-        "build_fn": "train_seq_1ch_residual:build_model",
+        "model_class": "protosleepnet.baselines.residual_model:ResidualSequenceWrapper",
+        "build_fn": "protosleepnet.baselines.train_seq_1ch_residual:build_model",
         "training": TRAIN_CONFIG,
     }
     config_path = os.path.join(args.output_dir, "config.json")

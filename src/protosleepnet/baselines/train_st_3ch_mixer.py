@@ -166,8 +166,8 @@ def main():
     print(f"Saved model weights to {model_path}")
 
     config = {
-        "model_class": "channel_mixer:ChannelMixerWrapper",
-        "build_fn": "train_st_3ch_mixer:build_model",
+        "model_class": "protosleepnet.baselines.channel_mixer:ChannelMixerWrapper",
+        "build_fn": "protosleepnet.baselines.train_st_3ch_mixer:build_model",
         "model_kwargs": {
             "epoch_kwargs": EPOCH_KWARGS,
             "seq_kwargs": SEQ_KWARGS,

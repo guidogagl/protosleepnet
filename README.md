@@ -120,7 +120,7 @@ experiment settings (M value, seeds, datasets) are documented per-script.
 | Fig 4; Supp §5,§6 | Prototype reconstruction (data/model/hybrid) + cross-dataset | `python -m protosleepnet.proto_reconstruction.data_driven` (`.model_driven`, `.hybrid`); `python -m protosleepnet.figure_reconstruction.compute_cross_dataset_metrics` |
 | Fig 3; Tab 1,2; Supp §4,§6 | Codebook summaries, band-ablation rules, coherence, local IG | `python -m protosleepnet.figure_reconstruction.{rule_learning,spectral_signature,relevance_signature,compute_local_explanations,combinatorial_ablation}` |
 | Supp §9 | Seed stability | `python -m protosleepnet.seed_stability_pipeline` |
-| Fig 5; Supp §7 | Clinical probing (AD/PD) | `python -m protosleepnet.clinical_probing.staging.extract_embeddings`; `python -m protosleepnet.clinical_probing.parkinsons.analyze_features`; `python -m protosleepnet.ood_disease.eval_ood` |
+| Fig 5; Supp §7 | Clinical probing (AD/PD), frozen-model LOSO | `python -m protosleepnet.clinical_probing.staging.extract_embeddings`; `python -m protosleepnet.probing.{parkinsons,alzheimers}.diagnosis_probe`; `python -m protosleepnet.clinical_probing.{parkinsons,alzheimers}.analyze_features` |
 
 Manuscript figure/table *assembly* (LaTeX-coupled emitters) is kept out of this
 repo, with the paper sources.
