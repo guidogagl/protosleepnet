@@ -7,10 +7,10 @@ set -euo pipefail
 
 # Prerequisite: pip install -e .  (installs the `protosleepnet` package + physioex==2.0.0)
 
-echo "[1/2] Loading pretrained ProtoSleepNet (PST) from HuggingFace 4rooms/physioex ..."
+echo "[1/2] Loading pretrained ProtoSleepTransformer (PST) from HuggingFace 4rooms/sleep-prototypes ..."
 python - <<'PY'
 from physioex.models import load_from_pretrained
-m = load_from_pretrained("protosleepnet-st-3ch-mixer", verbose=True)
+m = load_from_pretrained("protosleeptransformer-gagliardi", repo_id="4rooms/sleep-prototypes", verbose=True)
 import torch
 x = torch.randn(2, 21, 3, 29, 129)   # (batch, L, channels, T, F)
 with torch.no_grad():

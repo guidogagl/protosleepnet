@@ -5,8 +5,8 @@ v2.0.0), then evaluates it on the test split of every available dataset using
 per-subject voting (sliding window of length L).
 
 Usage:
-    python -m protosleepnet.test_pretrained --gpu_id 0
-    python -m protosleepnet.test_pretrained --model protosleepnet-seq-3ch-mixer --gpu_id 0
+    python -m protosleepnet.test_pretrained --gpu_id 0                               # PST (default)
+    python -m protosleepnet.test_pretrained --model protosleepnet-gagliardi --gpu_id 0   # PSN
     python -m protosleepnet.test_pretrained --gpu_id 0 --datasets shhs sleepedf
     python -m protosleepnet.test_pretrained --gpu_id 0 --upload
 """
@@ -22,7 +22,8 @@ from physioex.models.protosleepnet import ProtoSleepNetTrainer
 
 CHANNELS = ["EEG", "EOG", "EMG"]
 PIPELINE = "seqsleepnet"
-DEFAULT_MODEL = "protosleepnet-st-3ch-mixer"
+DEFAULT_MODEL = "protosleeptransformer-gagliardi"
+DEFAULT_REPO = "4rooms/sleep-prototypes"
 
 
 def evaluate_on_dataset(model, dataset_name, seq_len, gpu_id=None):
@@ -93,11 +94,15 @@ def main():
     )
     parser.add_argument(
         "--model", type=str, default=DEFAULT_MODEL,
-        help="HuggingFace model id (e.g. protosleepnet-st-3ch-mixer / -seq-3ch-mixer)",
+        help="HuggingFace model id (protosleeptransformer-gagliardi / protosleepnet-gagliardi)",
+    )
+    parser.add_argument(
+        "--repo_id", type=str, default=DEFAULT_REPO,
+        help="HuggingFace repo hosting the model (default: 4rooms/sleep-prototypes)",
     )
     parser.add_argument(
         "--seq_len", type=int, default=None,
-        help="Sliding-window length L (default: 20 for seq backbone, else 21)",
+        help="Sliding-window length L (default: 21 for SleepTransformer, 20 for SeqSleepNet)",
     )
     parser.add_argument(
         "--gpu_id", type=int, default=None, help="GPU device id (None for CPU)"
@@ -115,10 +120,10 @@ def main():
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
-    seq_len = args.seq_len or (20 if "seq" in args.model else 21)
+    seq_len = args.seq_len or (21 if "transformer" in args.model else 20)
 
-    print(f"Loading pretrained model '{args.model}' from HuggingFace...")
-    model = load_from_pretrained(args.model)
+    print(f"Loading pretrained model '{args.model}' from {args.repo_id}...")
+    model = load_from_pretrained(args.model, repo_id=args.repo_id)
     print(
         f"Model: {type(model).__name__}, "
         f"params={sum(p.numel() for p in model.parameters())}, L={seq_len}\n"

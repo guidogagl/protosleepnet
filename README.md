@@ -44,15 +44,22 @@ python -m protosleepnet.figure_reconstruction.spectral_signature --help
 
 ## Pretrained weights
 
-Weights are on the HuggingFace Hub under [`4rooms/physioex`](https://huggingface.co/4rooms/physioex)
-and load through physioex:
+Weights are on the HuggingFace Hub and load through physioex. Names follow the
+physioex convention `<model>-<primary-author>`. The paper's models live in
+[`4rooms/sleep-prototypes`](https://huggingface.co/4rooms/sleep-prototypes)
+(the Phan originals `{seqsleepnet,sleeptransformer}-phan` are in `4rooms/physioex`):
 
 ```python
 from physioex.models import load_from_pretrained
-model = load_from_pretrained("protosleepnet-st-3ch-mixer")   # PST (SleepTransformer backbone)
-# also: "protosleepnet-seq-3ch-mixer"                        # PSN (SeqSleepNet backbone)
+# PST — SleepTransformer backbone (SHHS, L=21)
+model = load_from_pretrained("protosleeptransformer-gagliardi", repo_id="4rooms/sleep-prototypes")
+# PSN — SeqSleepNet backbone (MASS, L=20)
+# load_from_pretrained("protosleepnet-gagliardi", repo_id="4rooms/sleep-prototypes")
 # input  (batch, L, 3, 29, 129) STFT log-power (EEG/EOG/EMG); output (batch, L, 5) AASM logits
 ```
+
+The 3-channel baselines and ablation variants are published alongside them:
+`{seqsleepnet,sleeptransformer}-gagliardi[-dropout|-mixer]`.
 
 `bash reproduce.sh` runs a smoke path (load weights → forward pass → regenerate one figure).
 

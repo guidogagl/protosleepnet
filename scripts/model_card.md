@@ -19,7 +19,7 @@ physiologically meaningful sub-stage pattern discovery"* (npj Digital Medicine).
 
 ```python
 from physioex.models import load_from_pretrained
-model = load_from_pretrained("{MODEL_ID}", verbose=True)
+model = load_from_pretrained("{MODEL_ID}", repo_id="{REPO}", verbose=True)
 # input  (batch, L, 3, 29, 129) STFT log-power (EEG/EOG/EMG)
 # output (batch, L, 5) AASM stage logits: W=0 N1=1 N2=2 N3=3 REM=4
 ```

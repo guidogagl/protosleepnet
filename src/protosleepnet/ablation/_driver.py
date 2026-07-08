@@ -37,19 +37,18 @@ from protosleepnet.train import BACKBONE_CONFIGS, MIXER_KWARGS, build_dataset
 
 VARIANTS = ("baseline", "dropout", "mixer", "protosleepnet")
 
-# per-(backbone, variant) HuggingFace artifact names (physioex baseline scheme)
+# per-(backbone, variant) HuggingFace artifact names — physioex convention
+# <model>-<primary-author>, published under 4rooms/sleep-prototypes.
+HF_REPO = "4rooms/sleep-prototypes"
 _BACKBONE_TAG = {"st": "sleeptransformer", "seq": "seqsleepnet"}
-_HF_SUFFIX = {
-    "baseline": "-3ch",
-    "dropout": "-3ch-dropout",
-    "mixer": "-3ch-mixer",
-}
+_PROTO_NAME = {"st": "protosleeptransformer-gagliardi", "seq": "protosleepnet-gagliardi"}
+_HF_SUFFIX = {"baseline": "", "dropout": "-dropout", "mixer": "-mixer"}
 
 
 def _hf_name(backbone, variant):
     if variant == "protosleepnet":
-        return f"protosleepnet-{backbone}-3ch-mixer"
-    return f"{_BACKBONE_TAG[backbone]}-phan{_HF_SUFFIX[variant]}"
+        return _PROTO_NAME[backbone]
+    return f"{_BACKBONE_TAG[backbone]}-gagliardi{_HF_SUFFIX[variant]}"
 
 
 def build_variant(backbone, variant, cdropout):
@@ -184,5 +183,5 @@ def run(backbone):
             api.upload_file(
                 path_or_fileobj=os.path.join(output_dir, fname),
                 path_in_repo=f"{hf_name}/{fname}",
-                repo_id="4rooms/physioex", repo_type="model")
-            print(f"Uploaded {fname} to 4rooms/physioex/{hf_name}/")
+                repo_id=HF_REPO, repo_type="model")
+            print(f"Uploaded {fname} to {HF_REPO}/{hf_name}/")

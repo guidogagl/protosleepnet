@@ -6,15 +6,15 @@ sliding-window encoding. Runs linear probing (5-fold CV) on each dataset.
 
 Usage:
     python -m protosleepnet.extract_embeddings \
-        --model_name sleeptransformer-phan-3ch --gpu_id 0
+        --model_name sleeptransformer-gagliardi --repo_id 4rooms/sleep-prototypes --gpu_id 0
     python -m protosleepnet.extract_embeddings \
-        --model_name seqsleepnet-phan-3ch \
+        --model_name seqsleepnet-gagliardi \
         --gpu_id 0 --datasets sleepedf hmc
     python -m protosleepnet.extract_embeddings \
-        --model_name sleeptransformer-phan-3ch \
+        --model_name sleeptransformer-gagliardi \
         --gpu_id 0 --datasets shhs --visit 2
     python -m protosleepnet.extract_embeddings \
-        --model_name sleeptransformer-phan-3ch \
+        --model_name sleeptransformer-gagliardi \
         --gpu_id 0 --datasets mass --cohort 3
 """
 import argparse
@@ -37,9 +37,9 @@ def main():
         description="Extract embeddings and run linear probing"
     )
     parser.add_argument("--model_name", type=str, required=True,
-                        help="Model name (e.g. sleeptransformer-phan-3ch)")
+                        help="Model name (e.g. sleeptransformer-gagliardi)")
     parser.add_argument("--repo_id", type=str, default=None,
-                        help="HuggingFace repo ID (default: 4rooms/physioex)")
+                        help="HuggingFace repo (default: 4rooms/physioex; paper models: 4rooms/sleep-prototypes)")
     parser.add_argument("--model_dir", type=str, default=None,
                         help="Local model dir with model.pt + config.json (offline, skips HF)")
     parser.add_argument("--gpu_id", type=int, default=0)
