@@ -19,7 +19,8 @@ from physioex.models.seqsleepnet import SeqSleepNet
 from physioex.train.trainer import Trainer
 
 MODEL_NAME = "seqsleepnet-phan-3ch"
-HF_REPO_ID = "4rooms/physioex"
+HF_REPO_ID = "4rooms/sleep-prototypes"
+HF_NAME = "seqsleepnet-gagliardi"  # physioex <model>-<author> naming for the released weights
 
 MODEL_KWARGS = {
     "n_classes": 5,
@@ -202,11 +203,11 @@ def main():
             local = os.path.join(args.output_dir, fname)
             api.upload_file(
                 path_or_fileobj=local,
-                path_in_repo=f"{MODEL_NAME}/{fname}",
+                path_in_repo=f"{HF_NAME}/{fname}",
                 repo_id=HF_REPO_ID,
                 repo_type="model",
             )
-            print(f"Uploaded {fname} to {HF_REPO_ID}/{MODEL_NAME}/")
+            print(f"Uploaded {fname} to {HF_REPO_ID}/{HF_NAME}/")
 
 
 if __name__ == "__main__":
