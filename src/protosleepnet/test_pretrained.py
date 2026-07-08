@@ -1,11 +1,12 @@
-"""Evaluate protosleepnet on all supported datasets.
+"""Evaluate a pretrained ProtoSleepNet on all supported datasets.
 
-Downloads the pretrained model via ``load_from_pretrained("prosleepnet-gagliardi")``,
-then evaluates it on the test split of every available dataset using per-subject
-voting (sliding window L=21).
+Downloads the pretrained model via ``load_from_pretrained(<model>)`` (physioex
+v2.0.0), then evaluates it on the test split of every available dataset using
+per-subject voting (sliding window of length L).
 
 Usage:
     python -m protosleepnet.test_pretrained --gpu_id 0
+    python -m protosleepnet.test_pretrained --model protosleepnet-seq-3ch-mixer --gpu_id 0
     python -m protosleepnet.test_pretrained --gpu_id 0 --datasets shhs sleepedf
     python -m protosleepnet.test_pretrained --gpu_id 0 --upload
 """
@@ -17,22 +18,21 @@ import torch
 
 from physioex.data.datasets import available_datasets, get_dataset
 from physioex.models import load_from_pretrained
-from physioex.models.prosleepnet import ProtoSleepTransformerTrainer
+from physioex.models.protosleepnet import ProtoSleepNetTrainer
 
 CHANNELS = ["EEG", "EOG", "EMG"]
 PIPELINE = "seqsleepnet"
-SEQ_LEN = 21
-MODEL_NAME = "prosleepnet-gagliardi"
+DEFAULT_MODEL = "protosleepnet-st-3ch-mixer"
 
 
-def evaluate_on_dataset(model, dataset_name, gpu_id=None):
+def evaluate_on_dataset(model, dataset_name, seq_len, gpu_id=None):
     """Evaluate model on a single dataset. Returns metrics dict or None on failure."""
     try:
         DatasetClass = get_dataset(dataset_name)
         dataset = DatasetClass(
             channels=CHANNELS,
             pipelines=PIPELINE,
-            sequence_length=SEQ_LEN,
+            sequence_length=seq_len,
         )
     except Exception as e:
         print(f"  [SKIP] {dataset_name}: cannot load dataset ({e})")
@@ -47,10 +47,10 @@ def evaluate_on_dataset(model, dataset_name, gpu_id=None):
     print(f"  {dataset_name}: {n_subjects} subjects, {len(test_ids)} in test split")
 
     try:
-        results = ProtoSleepTransformerTrainer.voting_evaluate(
+        results = ProtoSleepNetTrainer.voting_evaluate(
             model=model,
             dataset=dataset,
-            L=SEQ_LEN,
+            L=seq_len,
             fold=0,
             gpu_id=gpu_id,
         )
@@ -67,13 +67,13 @@ def evaluate_on_dataset(model, dataset_name, gpu_id=None):
     return serializable
 
 
-def print_summary_table(all_results):
+def print_summary_table(model_name, all_results):
     """Print a formatted table of per-dataset metrics."""
     header = (
         f"{'Dataset':15s} {'Acc':>7s} {'F1':>7s} {'Kappa':>7s} {'Prec':>7s} {'Rec':>7s}"
     )
     print("\n" + "=" * 60)
-    print("ProtoSleepTransformer-Gagliardi — Per-Dataset Evaluation Summary")
+    print(f"{model_name} — Per-Dataset Evaluation Summary")
     print("=" * 60)
     print(header)
     print("-" * 60)
@@ -89,37 +89,39 @@ def print_summary_table(all_results):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Evaluate protosleepnet on all supported datasets"
+        description="Evaluate a pretrained ProtoSleepNet on all supported datasets"
+    )
+    parser.add_argument(
+        "--model", type=str, default=DEFAULT_MODEL,
+        help="HuggingFace model id (e.g. protosleepnet-st-3ch-mixer / -seq-3ch-mixer)",
+    )
+    parser.add_argument(
+        "--seq_len", type=int, default=None,
+        help="Sliding-window length L (default: 20 for seq backbone, else 21)",
     )
     parser.add_argument(
         "--gpu_id", type=int, default=None, help="GPU device id (None for CPU)"
     )
     parser.add_argument(
-        "--datasets",
-        nargs="+",
-        default=None,
+        "--datasets", nargs="+", default=None,
         help="Specific datasets to evaluate (default: all available)",
     )
     parser.add_argument(
-        "--output_dir",
-        type=str,
-        default=".",
-        help="Directory to save metrics.json",
+        "--output_dir", type=str, default=".", help="Directory to save metrics.json",
     )
     parser.add_argument(
-        "--upload",
-        action="store_true",
-        help="Upload metrics.json to HuggingFace Hub",
+        "--upload", action="store_true", help="Upload metrics.json to HuggingFace Hub",
     )
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
+    seq_len = args.seq_len or (20 if "seq" in args.model else 21)
 
-    print("Loading pretrained ProtoSleepTransformer from HuggingFace...")
-    model = load_from_pretrained(MODEL_NAME)
+    print(f"Loading pretrained model '{args.model}' from HuggingFace...")
+    model = load_from_pretrained(args.model)
     print(
         f"Model: {type(model).__name__}, "
-        f"params={sum(p.numel() for p in model.parameters())}\n"
+        f"params={sum(p.numel() for p in model.parameters())}, L={seq_len}\n"
     )
 
     dataset_names = args.datasets if args.datasets else available_datasets()
@@ -127,7 +129,7 @@ def main():
     all_results = {}
     for name in dataset_names:
         print(f"Evaluating on {name}...")
-        metrics = evaluate_on_dataset(model, name, gpu_id=args.gpu_id)
+        metrics = evaluate_on_dataset(model, name, seq_len, gpu_id=args.gpu_id)
         if metrics is not None:
             all_results[name] = metrics
             acc = metrics.get("accuracy", 0)
@@ -135,7 +137,7 @@ def main():
             kap = metrics.get("cohen_kappa", 0)
             print(f"  -> acc={acc:.4f}, f1={f1:.4f}, kappa={kap:.4f}\n")
 
-    print_summary_table(all_results)
+    print_summary_table(args.model, all_results)
 
     metrics_path = os.path.join(args.output_dir, "metrics.json")
     with open(metrics_path, "w") as f:
@@ -148,11 +150,11 @@ def main():
         api = HfApi()
         api.upload_file(
             path_or_fileobj=metrics_path,
-            path_in_repo=f"{MODEL_NAME}/metrics.json",
+            path_in_repo=f"{args.model}/metrics.json",
             repo_id="4rooms/physioex",
             repo_type="model",
         )
-        print(f"Uploaded metrics.json to 4rooms/physioex/{MODEL_NAME}/")
+        print(f"Uploaded metrics.json to 4rooms/physioex/{args.model}/")
 
 
 if __name__ == "__main__":

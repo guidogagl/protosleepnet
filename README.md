@@ -116,7 +116,7 @@ experiment settings (M value, seeds, datasets) are documented per-script.
 |---|---|---|
 | Fig 2a; Supp §1 | In-domain + OOD staging, per-class, confusion, stats | `python -m protosleepnet.train`; `python -m protosleepnet.test_pretrained` |
 | Fig 2b; Supp §3,§8 | M-sweep, residual/VQ robustness, VQ methods, randomization | `python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq`; `python -m protosleepnet.plot.residual`; `python -m protosleepnet.plot.vq` |
-| Supp §2 | Ablation + occlusion robustness | `python -m protosleepnet.ablation.train_ablation`; `python -m protosleepnet.plot.occlusion` |
+| Supp §2 | Ablation (4 component variants) + occlusion robustness | `python -m protosleepnet.ablation.train_ablation --variant {baseline,dropout,mixer,protosleepnet}` (SleepTransformer) / `...train_ablation_seqsleepnet ...` (SeqSleepNet); `python -m protosleepnet.plot.occlusion` |
 | Fig 4; Supp §5,§6 | Prototype reconstruction (data/model/hybrid) + cross-dataset | `python -m protosleepnet.proto_reconstruction.data_driven` (`.model_driven`, `.hybrid`); `python -m protosleepnet.figure_reconstruction.compute_cross_dataset_metrics` |
 | Fig 3; Tab 1,2; Supp §4,§6 | Codebook summaries, band-ablation rules, coherence, local IG | `python -m protosleepnet.figure_reconstruction.{rule_learning,spectral_signature,relevance_signature,compute_local_explanations,combinatorial_ablation}` |
 | Supp §9 | Seed stability | `python -m protosleepnet.seed_stability_pipeline` |
