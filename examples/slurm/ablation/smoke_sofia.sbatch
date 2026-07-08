@@ -16,7 +16,7 @@ source ${PSN_VENV_ACTIVATE}
 export PYTHONUNBUFFERED=1
 export HF_HUB_OFFLINE=1
 
-OUTDIR="${PSN_WORK}/pretrained/smoke/protosleepnet-gagliardi"
+OUTDIR="${PSN_WORK}/pretrained/smoke/protosleepnet-st-3ch-mixer"
 mkdir -p "$OUTDIR"
 
 cd ${PHYSIOEX_REPO}

@@ -36,7 +36,7 @@ if [ "$VARIANT" = "prosleepnet" ]; then
         --datasets shhs \
         --gpu_id 0 \
         --num_workers 14 \
-        --output_dir ${PSN_PRETRAINED}/protosleepnet-gagliardi \
+        --output_dir ${PSN_PRETRAINED}/protosleepnet-st-3ch-mixer \
         --upload
 else
     python -m protosleepnet.ablation.train_ablation \

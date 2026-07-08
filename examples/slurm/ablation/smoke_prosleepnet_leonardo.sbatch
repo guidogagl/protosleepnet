@@ -37,4 +37,4 @@ python -m protosleepnet.train \
     --max_epochs 1 \
     --gpu_id 0 \
     --num_workers 14 \
-    --output_dir ${PSN_PRETRAINED}/smoke/protosleepnet-gagliardi
+    --output_dir ${PSN_PRETRAINED}/smoke/protosleepnet-st-3ch-mixer
