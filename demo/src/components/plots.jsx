@@ -13,42 +13,57 @@ function viridis(t) {
   return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
 }
 
+const CH_NAMES = ["EEG", "EOG", "EMG"];
+const CH_COLOR = ["#5ac8fa", "#8b7bf0", "#46d39a"];
+const GUTTER = 40;
+
 // ── multi-channel waveform ──
-export function Waveform({ channels, height = 46 }) {
+export function Waveform({ channels, height = 46, epochSec = 30 }) {
   const ref = useRef(null);
   useEffect(() => {
     const c = ref.current, wrap = c.parentElement;
     const dpr = window.devicePixelRatio || 1;
-    const W = wrap.clientWidth, H = height * channels.length;
+    const W = wrap.clientWidth, H = height * channels.length + 16;
     c.width = W * dpr; c.height = H * dpr; c.style.width = W + "px"; c.style.height = H + "px";
     const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const plotW = W - GUTTER;
+    ctx.font = "10px -apple-system, sans-serif";
     channels.forEach((sig, ci) => {
       const y0 = ci * height, mid = y0 + height / 2;
       let max = 1e-6; for (let i = 0; i < sig.length; i++) max = Math.max(max, Math.abs(sig[i]));
-      ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(W, mid); ctx.stroke();
-      ctx.strokeStyle = "#5ac8fa"; ctx.lineWidth = 0.9; ctx.beginPath();
+      ctx.strokeStyle = "rgba(255,255,255,0.05)"; ctx.beginPath(); ctx.moveTo(GUTTER, mid); ctx.lineTo(W, mid); ctx.stroke();
+      ctx.fillStyle = CH_COLOR[ci]; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      ctx.fillText(CH_NAMES[ci], 2, mid);
+      ctx.strokeStyle = CH_COLOR[ci]; ctx.lineWidth = 0.9; ctx.beginPath();
       for (let i = 0; i < sig.length; i++) {
-        const x = (i / (sig.length - 1)) * W;
+        const x = GUTTER + (i / (sig.length - 1)) * plotW;
         const y = mid - (sig[i] / max) * (height / 2 - 3);
         i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
       }
       ctx.stroke();
     });
-  }, [channels, height]);
+    // time axis
+    ctx.fillStyle = "#626c7d"; ctx.textBaseline = "bottom";
+    ctx.textAlign = "left"; ctx.fillText("0 s", GUTTER, H);
+    ctx.textAlign = "right"; ctx.fillText(`${epochSec} s`, W, H);
+  }, [channels, height, epochSec]);
   return <canvas ref={ref} className="plot" />;
 }
 
 // ── multi-channel spectrogram heatmap ──
-export function Spectrogram({ specs, T, F, chanHeight = 46, maxFreqBin = 100 }) {
+export function Spectrogram({ specs, T, F, chanHeight = 48, maxFreqBin = 103, fs = 100, nfft = 256, epochSec = 30 }) {
   const ref = useRef(null);
   useEffect(() => {
     const c = ref.current, wrap = c.parentElement;
     const dpr = window.devicePixelRatio || 1;
-    const W = wrap.clientWidth, H = chanHeight * specs.length;
+    const W = wrap.clientWidth, H = chanHeight * specs.length + 16;
     c.width = W * dpr; c.height = H * dpr; c.style.width = W + "px"; c.style.height = H + "px";
-    const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const ctx = c.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    const plotW = W - GUTTER;
     const off = document.createElement("canvas"); off.width = T; off.height = maxFreqBin;
     const octx = off.getContext("2d");
+    const hzOfBin = (b) => (b * fs) / nfft; // bin -> Hz
+    ctx.font = "9px -apple-system, sans-serif";
     specs.forEach((spec, ci) => {
       let lo = Infinity, hi = -Infinity;
       for (let i = 0; i < spec.length; i++) { if (spec[i] < lo) lo = spec[i]; if (spec[i] > hi) hi = spec[i]; }
@@ -63,10 +78,25 @@ export function Spectrogram({ specs, T, F, chanHeight = 46, maxFreqBin = 100 }) 
         }
       }
       octx.putImageData(img, 0, 0);
+      const y0 = ci * chanHeight;
       ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(off, 0, ci * chanHeight, W, chanHeight);
+      ctx.drawImage(off, GUTTER, y0, plotW, chanHeight);
+      // freq ticks (0 / 20 / 40 Hz) at left
+      ctx.fillStyle = "#8a93a3"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+      [0, 20, 40].forEach((hz) => {
+        const frac = hz / hzOfBin(maxFreqBin - 1);
+        const y = y0 + chanHeight - frac * chanHeight;
+        ctx.fillText(hz, GUTTER - 4, Math.max(y0 + 5, Math.min(y, y0 + chanHeight - 4)));
+      });
+      // channel name (top-left, on the heatmap)
+      ctx.fillStyle = "#fff"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+      ctx.fillText(CH_NAMES[ci], GUTTER + 4, y0 + 3);
     });
-  }, [specs, T, F, chanHeight, maxFreqBin]);
+    ctx.fillStyle = "#626c7d"; ctx.textBaseline = "bottom";
+    ctx.textAlign = "left"; ctx.fillText("0 s", GUTTER, H);
+    ctx.textAlign = "center"; ctx.fillText("Hz", GUTTER / 2, 12);
+    ctx.textAlign = "right"; ctx.fillText(`${epochSec} s`, W, H);
+  }, [specs, T, F, chanHeight, maxFreqBin, fs, nfft, epochSec]);
   return <canvas ref={ref} className="plot" />;
 }
 

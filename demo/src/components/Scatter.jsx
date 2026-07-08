@@ -94,12 +94,17 @@ export default function Scatter({
     const { valueA, palette } = encodeColor(data, colorBy);
     const valueB = new Float32Array(data.n);
     const hasSubj = subjectOrder != null;
-    if (hasSubj) for (let i = 0; i < data.n; i++) valueB[i] = data.subj[i] === subjectOrder ? 1 : 0;
+    if (hasSubj) {
+      for (let i = 0; i < data.n; i++) valueB[i] = data.subj[i] === subjectOrder ? 1 : 0;
+    } else {
+      // overview: push unscored epochs to the background so stages read clearly
+      for (let i = 0; i < data.n; i++) valueB[i] = data.label[i] === 255 ? 0 : 1;
+    }
     sp.set({
       pointColor: palette,
       colorBy: "valueA",
-      opacityBy: hasSubj ? "valueB" : null,
-      opacity: hasSubj ? [0.05, 0.95] : 0.62,
+      opacityBy: "valueB",
+      opacity: hasSubj ? [0.05, 0.95] : [0.14, 0.66],
       pointSize: pointSizeFor(data.n),
     });
     sp.draw(
@@ -179,6 +184,10 @@ export default function Scatter({
         </div>
       )}
 
+      <div className="scatter-label">
+        UMAP · 128-D epoch embedding
+        <span>{data ? `${data.n.toLocaleString()} epochs` : ""}</span>
+      </div>
       <div className="scatter-hint">
         {loading ? "loading embeddings…"
           : "scroll to zoom · drag to pan · click a point or a ◆ prototype"}
