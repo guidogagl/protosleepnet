@@ -1,0 +1,22 @@
+{
+  "name": "protosleepnet-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Interactive explainability atlas for ProtoSleepNet (SleepEDF). Static, GPU-free.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "d3-scale": "^4.0.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "regl-scatterplot": "^1.16.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.3"
+  }
+}
