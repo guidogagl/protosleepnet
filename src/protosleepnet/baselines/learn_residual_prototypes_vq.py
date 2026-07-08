@@ -6,7 +6,7 @@ Two modes:
 
 Usage:
     python baselines/learn_residual_prototypes_vq.py \
-        --build_module train_seq_1ch_residual \
+        --build_module protosleepnet.baselines.train_seq_1ch_residual \
         --checkpoint /path/to/checkpoint.pt \
         --emb_dir /path/to/embeddings \
         --n_prototypes 48 --gpu_id 0
@@ -21,7 +21,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-sys.path.insert(0, os.path.dirname(__file__))
 
 from physioex.explain.prototypes.posthoc import (
     learn_codebook_kmeans,

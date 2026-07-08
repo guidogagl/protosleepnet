@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protosleepnet"
+version = "1.0.0"
+description = "Prototype-based interpretable sleep staging — experiment pipeline for the ProtoSleepNet paper (npj Digital Medicine)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Guido Gagliardi", email = "guido.gagliardi@kuleuven.be" }]
+keywords = ["sleep-staging", "interpretability", "prototypes", "EEG", "physioex"]
+
+# The model, data loaders, preprocessing, splits, seeds and metrics come from physioex.
+dependencies = [
+    "physioex==2.0.0",
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "matplotlib",
+    "tqdm",
+]
+
+[project.urls]
+Homepage = "https://github.com/guidogagl/protosleepnet"
+"Paper" = "https://www.nature.com/npjdigitalmed/"
+"physioex" = "https://github.com/guidogagl/physioex"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -8,7 +8,7 @@ Two stages:
 Reference: Rymarczyk et al., "ProtoQuant", 2025 (arXiv:2602.06592)
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/learn_prototypes_vq.py \
+    python -m protosleepnet.posthoc_prototypes.learn_prototypes_vq \
         --model_dir /path/to/pretrained/st-baseline \
         --emb_dir /path/to/embeddings/st-baseline \
         --n_prototypes 48 \

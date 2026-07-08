@@ -8,11 +8,11 @@ Supports SHHS (SleepTransformer) and MASS (SeqSleepNet) datasets.
 
 Usage:
     # SleepTransformer on SHHS
-    python examples/pretrained/protosleepnet-gagliardi/baselines/test_occlusion.py \
+    python -m protosleepnet.baselines.test_occlusion \
         --model_dir /path/to/sleeptransformer-phan-3ch --gpu_id 0
 
     # SeqSleepNet on MASS
-    python examples/pretrained/protosleepnet-gagliardi/baselines/test_occlusion.py \
+    python -m protosleepnet.baselines.test_occlusion \
         --model_dir /path/to/seqsleepnet-phan-3ch --dataset mass --seq_len 20 --gpu_id 0
 """
 import argparse

@@ -22,9 +22,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-sys.path.insert(0, os.path.dirname(__file__))
-from build_protosleepnet import build_model
-from train import build_dataset, BACKBONE_CONFIGS, MIXER_KWARGS
+from protosleepnet.build_protosleepnet import build_model
+from protosleepnet.train import build_dataset, BACKBONE_CONFIGS, MIXER_KWARGS
 
 from physioex.data.collate import stack_channels
 from physioex.train.trainer import Trainer

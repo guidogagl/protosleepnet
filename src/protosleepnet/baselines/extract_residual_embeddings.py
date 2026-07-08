@@ -5,7 +5,7 @@ the epoch_encoder for each subject in train/valid/test splits.
 
 Usage:
     python baselines/extract_residual_embeddings.py \
-        --build_module train_seq_1ch_residual \
+        --build_module protosleepnet.baselines.train_seq_1ch_residual \
         --checkpoint /path/to/checkpoint.pt \
         --output_dir /path/to/embeddings \
         --dataset mass --channels EEG --seq_len 20
@@ -22,7 +22,6 @@ from tqdm import tqdm
 from physioex.data.datasets import get_dataset
 from physioex.data.collate import stack_channels
 
-sys.path.insert(0, os.path.dirname(__file__))
 
 
 def load_residual_model(build_module, checkpoint_path, device):

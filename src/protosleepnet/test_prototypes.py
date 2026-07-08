@@ -1,7 +1,7 @@
 """Test ProtoSleepNet with VQ prototypes using model.set_codebook + forward(quantize=True).
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/test_prototypes.py \
+    python -m protosleepnet.test_prototypes \
         --backbone seq --checkpoint /path/to/model.pt \
         --codebook_path /path/to/codebook.npy \
         --dataset mass --seq_len 20 --gpu_id 0 --output_dir /results
@@ -20,8 +20,7 @@ from physioex.data.datasets import get_dataset
 from physioex.data.collate import stack_channels
 from physioex.train.trainer import Trainer
 
-sys.path.insert(0, os.path.dirname(__file__))
-from build_protosleepnet import build_model
+from protosleepnet.build_protosleepnet import build_model
 
 CLASS_NAMES = ["W", "N1", "N2", "N3", "REM"]
 

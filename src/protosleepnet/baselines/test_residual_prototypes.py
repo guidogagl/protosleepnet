@@ -5,7 +5,7 @@ then runs through the residual downstream: z_q + gru(z_q) → classifier.
 
 Usage:
     python baselines/test_residual_prototypes.py \
-        --build_module train_seq_1ch_residual \
+        --build_module protosleepnet.baselines.train_seq_1ch_residual \
         --checkpoint /path/to/checkpoint.pt \
         --codebook_path /path/to/codebook_vq_kmeans_m48.npy \
         --dataset mass --seq_len 20 --gpu_id 0
@@ -26,7 +26,6 @@ from physioex.data.datasets import get_dataset
 from physioex.data.collate import stack_channels
 from physioex.train.trainer import Trainer
 
-sys.path.insert(0, os.path.dirname(__file__))
 
 CLASS_NAMES = ["W", "N1", "N2", "N3", "REM"]
 

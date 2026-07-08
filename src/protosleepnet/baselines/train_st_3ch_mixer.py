@@ -5,7 +5,7 @@ accuracy-weighted ZeroEmbeddingDropout + TransformerEncoder mixer (no residual)
 + attention pooling + SequenceTransformer + classifier.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/baselines/train_st_3ch_mixer.py --gpu_id 0
+    python -m protosleepnet.baselines.train_st_3ch_mixer --gpu_id 0
 """
 import argparse
 import json
@@ -15,9 +15,8 @@ import sys
 import torch
 import torch.nn as nn
 
-sys.path.insert(0, os.path.dirname(__file__))
 
-from channel_mixer import ChannelMixerWrapper, MixerTrainer
+from protosleepnet.baselines.channel_mixer import ChannelMixerWrapper, MixerTrainer
 from physioex.data.datasets import get_dataset
 from physioex.models.sleeptransformer import EpochTransformer, SequenceTransformer
 

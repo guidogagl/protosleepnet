@@ -7,7 +7,7 @@ For each scenario, saves per-subject predict_proba and computes metrics
 (acc, f1, kappa, precision, recall, per-class f1) with deltas from clean.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/test_occlusion.py \
+    python -m protosleepnet.ablation.test_occlusion \
         --model_dir /path/to/pretrained/st-baseline --gpu_id 0
 """
 import argparse

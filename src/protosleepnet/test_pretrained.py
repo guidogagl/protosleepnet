@@ -1,13 +1,13 @@
-"""Evaluate protosleepnet-gagliardi on all supported datasets.
+"""Evaluate protosleepnet on all supported datasets.
 
 Downloads the pretrained model via ``load_from_pretrained("prosleepnet-gagliardi")``,
 then evaluates it on the test split of every available dataset using per-subject
 voting (sliding window L=21).
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/test_pretrained.py --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/test_pretrained.py --gpu_id 0 --datasets shhs sleepedf
-    python examples/pretrained/protosleepnet-gagliardi/test_pretrained.py --gpu_id 0 --upload
+    python -m protosleepnet.test_pretrained --gpu_id 0
+    python -m protosleepnet.test_pretrained --gpu_id 0 --datasets shhs sleepedf
+    python -m protosleepnet.test_pretrained --gpu_id 0 --upload
 """
 import argparse
 import json
@@ -89,7 +89,7 @@ def print_summary_table(all_results):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Evaluate protosleepnet-gagliardi on all supported datasets"
+        description="Evaluate protosleepnet on all supported datasets"
     )
     parser.add_argument(
         "--gpu_id", type=int, default=None, help="GPU device id (None for CPU)"

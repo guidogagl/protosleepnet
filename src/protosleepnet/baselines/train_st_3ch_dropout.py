@@ -5,8 +5,8 @@ randomly zero input channels during training, improving robustness to
 missing channels at inference time.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/baselines/train_st_3ch_dropout.py --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/baselines/train_st_3ch_dropout.py --gpu_id 0 --cdropout 0.25
+    python -m protosleepnet.baselines.train_st_3ch_dropout --gpu_id 0
+    python -m protosleepnet.baselines.train_st_3ch_dropout --gpu_id 0 --cdropout 0.25
 """
 import argparse
 import json
@@ -16,9 +16,8 @@ import sys
 import torch
 
 # Allow relative import of channel_dropout from same directory
-sys.path.insert(0, os.path.dirname(__file__))
 
-from channel_dropout import ChannelDropoutWrapper
+from protosleepnet.baselines.channel_dropout import ChannelDropoutWrapper
 from physioex.data.datasets import get_dataset
 from physioex.models.sleeptransformer import SleepTransformer
 from physioex.train.trainer import Trainer

@@ -5,7 +5,7 @@ test split using per-subject voting (L=21). Saves per-subject predictions
 and aggregated metrics.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/baselines/test_st_1ch.py --gpu_id 0
+    python -m protosleepnet.baselines.test_st_1ch --gpu_id 0
 """
 import argparse
 import json

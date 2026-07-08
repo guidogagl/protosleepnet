@@ -11,10 +11,10 @@ All variants use per-channel encoding (filterbank + BiLSTM + attention)
 with 3 channels (EEG, EOG, EMG), trained on SHHS by default.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation_seqsleepnet.py --variant baseline --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation_seqsleepnet.py --variant dropout  --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation_seqsleepnet.py --variant mixer    --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation_seqsleepnet.py --variant protosleepnet --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation_seqsleepnet --variant baseline --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation_seqsleepnet --variant dropout  --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation_seqsleepnet --variant mixer    --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation_seqsleepnet --variant protosleepnet --gpu_id 0
 """
 import argparse
 import json

@@ -6,7 +6,7 @@ Same architecture as sleeptransformer-phan but with:
   - Sequence encoder zero-initialized (starts as identity)
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/baselines/train_st_1ch_residual.py --gpu_id 0
+    python -m protosleepnet.baselines.train_st_1ch_residual --gpu_id 0
 """
 import argparse
 import json
@@ -16,9 +16,8 @@ import sys
 import torch
 import torch.nn as nn
 
-sys.path.insert(0, os.path.dirname(__file__))
 
-from residual_model import ResidualSequenceWrapper, ResidualTrainer
+from protosleepnet.baselines.residual_model import ResidualSequenceWrapper, ResidualTrainer
 from physioex.data.datasets import get_dataset
 from physioex.models.sleeptransformer import EpochTransformer, SequenceTransformer
 

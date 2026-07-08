@@ -4,7 +4,7 @@ Handles the full pipeline: per-channel encoding + mixer + attn pooling.
 Saves per-subject .npy files compatible with posthoc prototype scripts.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/extract_proto_embeddings.py \
+    python -m protosleepnet.extract_proto_embeddings \
         --backbone seq --checkpoint /path/to/model.pt \
         --output_dir /path/to/embeddings --dataset mass
 """
@@ -19,8 +19,7 @@ from tqdm import tqdm
 from physioex.data.datasets import get_dataset
 from physioex.data.collate import stack_channels
 
-sys.path.insert(0, os.path.dirname(__file__))
-from build_protosleepnet import build_model
+from protosleepnet.build_protosleepnet import build_model
 
 
 def load_model(backbone, checkpoint_path, device):

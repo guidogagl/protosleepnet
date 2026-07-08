@@ -20,8 +20,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-sys.path.insert(0, os.path.dirname(__file__))
-from build_protosleepnet import build_model
+from protosleepnet.build_protosleepnet import build_model
 
 from physioex.explain.prototypes.posthoc import (
     learn_codebook_kmeans,

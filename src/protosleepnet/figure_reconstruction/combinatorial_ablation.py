@@ -27,17 +27,7 @@ for c in [Path(os.environ.get("PHYSIOEX_ROOT", "")), Path(os.environ.get("PHYSIO
         sys.path.insert(0, str(c)); PHYSIOEX_ROOT = c; break
 
 from physioex.explain.foundational.sleep_bands import SLEEP_BANDS, bands_to_bin_ranges
-
-for _p in [
-    str(Path(__file__).resolve().parents[2] / "physioex" /
-        "examples" / "pretrained" / "protosleepnet-gagliardi" / "proto-reconstruction"),
-    os.environ.get("PROTO_RECON_SRC", ""),
-    os.environ.get("PROTO_RECON_SRC", ""),
-]:
-    if Path(_p).is_dir():
-        sys.path.insert(0, _p)
-        break
-from utils import load_frozen_model, load_codebook, add_common_args, get_device, get_paths, CONFIGS
+from protosleepnet.proto_reconstruction.utils import load_frozen_model, load_codebook, add_common_args, get_device, get_paths, CONFIGS
 
 torch.backends.cudnn.enabled = False
 

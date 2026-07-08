@@ -33,8 +33,7 @@ import numpy as np
 import torch
 
 # Reuse functions from test_prototypes.py (same directory)
-sys.path.insert(0, os.path.dirname(__file__))
-from test_prototypes import (
+from protosleepnet.test_prototypes import (
     load_model,
     evaluate_subject,
     compute_metrics,

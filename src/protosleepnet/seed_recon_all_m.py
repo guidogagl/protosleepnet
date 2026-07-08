@@ -18,11 +18,9 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "proto-reconstruction"))
-sys.path.insert(0, os.path.dirname(__file__))
 
-from build_protosleepnet import build_model
-from train import build_dataset, BACKBONE_CONFIGS
+from protosleepnet.build_protosleepnet import build_model
+from protosleepnet.train import build_dataset, BACKBONE_CONFIGS
 
 from physioex.data.collate import stack_channels
 from physioex.train.trainer import Trainer

@@ -18,9 +18,8 @@ import time
 import numpy as np
 import torch
 
-sys.path.insert(0, os.path.dirname(__file__))
-from build_protosleepnet import build_model
-from train import build_dataset, BACKBONE_CONFIGS, MIXER_KWARGS
+from protosleepnet.build_protosleepnet import build_model
+from protosleepnet.train import build_dataset, BACKBONE_CONFIGS, MIXER_KWARGS
 
 from physioex.data.collate import stack_channels
 from physioex.data.datasets import get_dataset
@@ -30,7 +29,7 @@ from physioex.explain.prototypes.posthoc import learn_codebook_kmeans
 
 
 # Reuse evaluation functions from test_prototypes.py
-from test_prototypes import (
+from protosleepnet.test_prototypes import (
     evaluate_subject,
     compute_metrics,
 )

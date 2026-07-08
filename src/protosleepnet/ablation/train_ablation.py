@@ -11,10 +11,10 @@ All variants use per-channel EpochTransformer (d_model=128) with 3 channels
 (EEG, EOG, EMG), trained on SHHS by default.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation.py --variant baseline --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation.py --variant dropout  --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation.py --variant mixer    --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/train_ablation.py --variant baseline --datasets sleepedf --max_epochs 2
+    python -m protosleepnet.ablation.train_ablation --variant baseline --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation --variant dropout  --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation --variant mixer    --gpu_id 0
+    python -m protosleepnet.ablation.train_ablation --variant baseline --datasets sleepedf --max_epochs 2
 """
 import argparse
 import json

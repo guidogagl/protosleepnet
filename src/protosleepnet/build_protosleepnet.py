@@ -1,6 +1,6 @@
 """Factory module for ProtoSleepNet model construction.
 
-Used by extraction/testing scripts via --build_module build_protosleepnet.
+Used by extraction/testing scripts via --build_module protosleepnet.build_protosleepnet.
 """
 from physioex.models.protosleepnet import ProtoSleepNet
 

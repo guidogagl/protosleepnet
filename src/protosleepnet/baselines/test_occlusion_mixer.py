@@ -3,7 +3,7 @@
 Loads the mixer model from a checkpoint, runs occlusion scenarios.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/baselines/test_occlusion_mixer.py \
+    python -m protosleepnet.baselines.test_occlusion_mixer \
         --checkpoint /path/to/checkpoint.pt --scenario clean --gpu_id 0
 """
 import argparse
@@ -14,9 +14,8 @@ import sys
 import torch
 from tqdm import tqdm
 
-sys.path.insert(0, os.path.dirname(__file__))
 
-from test_occlusion import (
+from protosleepnet.baselines.test_occlusion import (
     ChannelOcclusionWrapper,
     SCENARIOS,
     CLASS_NAMES,
@@ -24,8 +23,8 @@ from test_occlusion import (
     compute_metrics,
     build_dataset,
 )
-from train_seq_3ch_mixer import build_model as build_seq_mixer
-from train_st_3ch_mixer import build_model as build_st_mixer
+from protosleepnet.baselines.train_seq_3ch_mixer import build_model as build_seq_mixer
+from protosleepnet.baselines.train_st_3ch_mixer import build_model as build_st_mixer
 from physioex.train.trainer import Trainer
 
 BUILDERS = {

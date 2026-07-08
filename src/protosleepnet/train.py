@@ -7,15 +7,15 @@ ProtoSleepNet wraps a backbone (SleepTransformer or SeqSleepNet) with:
 
 Usage:
     # SeqSleepNet backbone, 3ch + mixer, on MASS
-    python examples/pretrained/protosleepnet-gagliardi/train.py \
+    python -m protosleepnet.train \
         --backbone seq --dataset mass --n_channels 3 --use_mixer --gpu_id 0
 
     # SleepTransformer backbone, 3ch + mixer, on SHHS
-    python examples/pretrained/protosleepnet-gagliardi/train.py \
+    python -m protosleepnet.train \
         --backbone st --dataset shhs --n_channels 3 --use_mixer --gpu_id 0
 
     # SeqSleepNet backbone, 1ch (no mixer), on MASS
-    python examples/pretrained/protosleepnet-gagliardi/train.py \
+    python -m protosleepnet.train \
         --backbone seq --dataset mass --n_channels 1 --gpu_id 0
 """
 import argparse
@@ -27,7 +27,7 @@ import torch
 from physioex.data.datasets import get_dataset
 from physioex.models.protosleepnet import ProtoSleepNet, ProtoSleepNetTrainer
 
-MODEL_NAME = "protosleepnet-gagliardi"
+MODEL_NAME = "protosleepnet"
 HF_REPO_ID = "4rooms/physioex"
 
 # ── Backbone defaults ────────────────────────────────────────────────

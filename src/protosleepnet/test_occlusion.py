@@ -3,7 +3,7 @@
 Loads ProtoSleepNet via factory method + checkpoint, runs occlusion scenarios.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/test_occlusion.py \
+    python -m protosleepnet.test_occlusion \
         --backbone seq --checkpoint /path/to/model.pt --dataset mass --seq_len 20 \
         --scenario clean --gpu_id 0 --output_dir /path/to/results
 """

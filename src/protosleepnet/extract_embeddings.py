@@ -5,15 +5,15 @@ embeddings for every subject in the specified dataset(s) using
 sliding-window encoding. Runs linear probing (5-fold CV) on each dataset.
 
 Usage:
-    python examples/pretrained/protosleepnet-gagliardi/extract_embeddings.py \
+    python -m protosleepnet.extract_embeddings \
         --model_name sleeptransformer-gagliardi --repo_id 4rooms/sleep-prototypes --gpu_id 0
-    python examples/pretrained/protosleepnet-gagliardi/extract_embeddings.py \
+    python -m protosleepnet.extract_embeddings \
         --model_name seqsleepnet-gagliardi --repo_id 4rooms/sleep-prototypes \
         --gpu_id 0 --datasets sleepedf hmc
-    python examples/pretrained/protosleepnet-gagliardi/extract_embeddings.py \
+    python -m protosleepnet.extract_embeddings \
         --model_name sleeptransformer-gagliardi --repo_id 4rooms/sleep-prototypes \
         --gpu_id 0 --datasets shhs --visit 2
-    python examples/pretrained/protosleepnet-gagliardi/extract_embeddings.py \
+    python -m protosleepnet.extract_embeddings \
         --model_name sleeptransformer-gagliardi --repo_id 4rooms/sleep-prototypes \
         --gpu_id 0 --datasets mass --cohort 3
 """
