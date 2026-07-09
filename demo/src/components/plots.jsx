@@ -64,10 +64,13 @@ export function Spectrogram({ specs, T, F, chanHeight = 48, maxFreqBin = 103, fs
     const octx = off.getContext("2d");
     const hzOfBin = (b) => (b * fs) / nfft; // bin -> Hz
     ctx.font = "9px -apple-system, sans-serif";
-    specs.forEach((spec, ci) => {
-      let lo = Infinity, hi = -Infinity;
+    // shared dB colour scale across channels so relative power is comparable
+    // (e.g. SleepEDF's 1 Hz EMG reads as low-power, not stretched noise)
+    let lo = Infinity, hi = -Infinity;
+    for (const spec of specs)
       for (let i = 0; i < spec.length; i++) { if (spec[i] < lo) lo = spec[i]; if (spec[i] > hi) hi = spec[i]; }
-      const rng = hi - lo || 1;
+    const rng = hi - lo || 1;
+    specs.forEach((spec, ci) => {
       const img = octx.createImageData(T, maxFreqBin);
       for (let t = 0; t < T; t++) {
         for (let f = 0; f < maxFreqBin; f++) {

@@ -43,6 +43,20 @@ export default function Scatter({
   const [size, setSize] = useState({ w: 0, h: 0 });
   const [hover, setHover] = useState(null);
   const rafRef = useRef(0);
+  const downRef = useRef(null);
+  const dataRef = useRef(null);
+  const onSelRef = useRef(null);
+  const camRef = useRef(null); // regl camera view matrix (mat4, column-major)
+  const sizeRef = useRef({ w: 0, h: 0 });
+  dataRef.current = data;
+  onSelRef.current = onSelectEpoch;
+
+  // project a data coord (normalized to [-1,1]) to screen px via the camera
+  function projectWith(m, px, py, w, h) {
+    const tx = m[0] * px + m[4] * py + m[12];
+    const ty = m[1] * px + m[5] * py + m[13];
+    return [(tx * 0.5 + 0.5) * w, (0.5 - ty * 0.5) * h];
+  }
 
   // create scatterplot once
   useEffect(() => {
@@ -60,8 +74,10 @@ export default function Scatter({
       deselectOnEscape: true,
     });
     spRef.current = sp;
+    camRef.current = sp.get("cameraView");
 
-    sp.subscribe("view", () => {
+    sp.subscribe("view", (e) => {
+      camRef.current = (e && e.camera && e.camera.view) || sp.get("cameraView") || camRef.current;
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => setViewV((v) => v + 1));
     });
@@ -73,17 +89,52 @@ export default function Scatter({
       if (p) setHover({ idx, x: p[0], y: p[1] });
     });
     sp.subscribe("pointOut", () => setHover(null));
+    if (import.meta.env.DEV) window.__sp = sp;
+
+    // Reliable click-to-select: regl consumes canvas mouse events and its
+    // hit-test radius equals the (tiny) point size, so most clicks select
+    // nothing. Attach native listeners on the wrapper and pick the nearest
+    // point in screen space on a genuine click (not a drag).
+    const wrap = wrapRef.current;
+    const onDownN = (e) => { downRef.current = { x: e.clientX, y: e.clientY }; };
+    const onUpN = (e) => {
+      const d = downRef.current; downRef.current = null;
+      const dd = dataRef.current;
+      if (!dd || !d) return;
+      if (Math.hypot(e.clientX - d.x, e.clientY - d.y) > 5) return; // drag
+      const rect = canvasRef.current.getBoundingClientRect();
+      const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+      const m = camRef.current || sp.get("cameraView");
+      const W = rect.width, H = rect.height;
+      let best = -1, bestD = Infinity;
+      for (let i = 0; i < dd.n; i++) {
+        const [sx, sy] = projectWith(m, dd.x[i], dd.y[i], W, H);
+        const dx = sx - cx, dy = sy - cy;
+        const q = dx * dx + dy * dy;
+        if (q < bestD) { bestD = q; best = i; }
+      }
+      if (best >= 0 && bestD < 60 * 60 && onSelRef.current) onSelRef.current(best);
+    };
+    wrap.addEventListener("mousedown", onDownN, true);
+    wrap.addEventListener("mouseup", onUpN, true);
 
     const ro = new ResizeObserver(() => {
       const el = wrapRef.current;
       if (!el) return;
       const w = el.clientWidth, h = el.clientHeight;
+      sizeRef.current = { w, h };
       setSize({ w, h });
       try { sp.set({ width: w, height: h }); } catch {}
+      camRef.current = sp.get("cameraView") || camRef.current;
       setViewV((v) => v + 1);
     });
     ro.observe(wrapRef.current);
-    return () => { ro.disconnect(); cancelAnimationFrame(rafRef.current); sp.destroy(); };
+    return () => {
+      ro.disconnect(); cancelAnimationFrame(rafRef.current);
+      wrap.removeEventListener("mousedown", onDownN, true);
+      wrap.removeEventListener("mouseup", onUpN, true);
+      sp.destroy();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -163,7 +214,9 @@ export default function Scatter({
               key={m.k}
               className="proto-marker"
               transform={`translate(${m.cx},${m.cy}) rotate(45)`}
-              onClick={() => onSelectProto(m.k)}
+              onClick={(e) => { e.stopPropagation(); onSelectProto(m.k); }}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
             >
               <rect x={-r} y={-r} width={r * 2} height={r * 2} rx="3"
                 fill={m.color} stroke="#0a0d13" strokeWidth="2" opacity={active ? 1 : 0.95} />

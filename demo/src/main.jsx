@@ -3,8 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./styles.css";
 
-createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// No StrictMode: this app drives an imperative WebGL scatterplot (regl) and a
+// dev __demo hook; StrictMode's double-mount would create/destroy two GL
+// contexts and duplicate listeners.
+createRoot(document.getElementById("root")).render(<App />);
