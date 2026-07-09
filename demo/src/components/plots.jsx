@@ -112,17 +112,18 @@ export function ProbBars({ proba, trueLabel, predLabel }) {
         const isTrue = i === trueLabel;
         const isPred = i === predLabel;
         return (
-          <div className={"prob row" + (isTrue ? " truth" : "")} key={s}>
+          <div className={"prob row" + (isTrue ? " truth" : "") + (isPred ? " pred" : "")} key={s}>
             <span className="name" style={{ color: isTrue ? "#fff" : undefined }}>
               {s}{isTrue ? " ●" : ""}
             </span>
             <span className="track">
               <span className="fill" style={{
-                width: `${(v * 100).toFixed(1)}%`,
-                background: isPred ? STAGE_COLOR[s] : "rgba(255,255,255,0.22)",
+                width: `${Math.max(v * 100, v > 0 ? 1.5 : 0)}%`,
+                background: STAGE_COLOR[s],
+                opacity: isPred ? 1 : 0.55,
               }} />
             </span>
-            <span className="val tnum">{(v * 100).toFixed(0)}%</span>
+            <span className="val tnum" style={{ fontWeight: isPred ? 700 : 400 }}>{(v * 100).toFixed(0)}%</span>
           </div>
         );
       })}

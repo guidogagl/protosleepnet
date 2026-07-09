@@ -283,11 +283,33 @@ def compute_model(backbone, checkpoint, codebook_path, committed_root, out_dir,
             "accuracy": acc, "seq_len": L, "backbone": backbone}
 
 
+def _griffin_lim(db_TF, n_iter=60):
+    """Estimate a 30 s waveform from a log-power spectrogram (T=29, F=129 dB)
+    via Griffin-Lim (phase is not stored, so we recover it iteratively).
+    Matches the XSleepNet STFT geometry: hamming/200, hop 100, nfft 256, 100 Hz
+    -> 200 + 28*100 = 3000 samples. Amplitude is arbitrary (display auto-scales).
+    """
+    from scipy.signal import stft, istft
+    kw = dict(fs=100, window="hamming", nperseg=200, noverlap=100, nfft=256)
+    mag = np.power(10.0, np.asarray(db_TF).T / 20.0)  # (F=129, T=29) amplitude
+    rng = np.random.default_rng(0)
+    S = mag * np.exp(2j * np.pi * rng.random(mag.shape))
+    for _ in range(n_iter):
+        _, x = istft(S, input_onesided=True, boundary=False, **kw)
+        _, _, X = stft(x, boundary=None, padded=False, **kw)
+        T = mag.shape[1]
+        X = X[:, :T] if X.shape[1] >= T else np.pad(X, ((0, 0), (0, T - X.shape[1])))
+        S = mag * np.exp(1j * np.angle(X))
+    _, x = istft(S, input_onesided=True, boundary=False, **kw)
+    x = np.asarray(x, dtype=np.float32)
+    return (x[:3000] if len(x) >= 3000 else np.pad(x, (0, 3000 - len(x)))).astype(np.float32)
+
+
 def write_reconstructions(backbone, recon_root, method, out_dir):
     """Ship the paper's per-prototype reconstruction (mean over the optimized
-    samples) as a (12, 3, 29, 129) dB array. Reuses the committed-M12
-    reconstruction pipeline output, which was built with the same
-    vq_kmeans/12 codebook as the atlas, so prototype indices align.
+    samples) as a (12, 3, 29, 129) dB array, plus a Griffin-Lim time-series
+    (12, 3, 3000). Reuses the committed-M12 reconstruction pipeline output,
+    built with the same vq_kmeans/12 codebook as the atlas, so indices align.
     """
     cfg = MODELS[backbone]
     hf, committed = cfg["hf"], cfg["committed"]
@@ -299,7 +321,13 @@ def write_reconstructions(backbone, recon_root, method, out_dir):
     R = np.stack(recs).astype(np.float32)                       # (12, 3, 29, 129)
     (out_dir / hf).mkdir(parents=True, exist_ok=True)
     pack.write_f16(out_dir / hf / "reconstructions.f16", R)
-    print(f"[{hf}] wrote reconstructions {R.shape} ({method})")
+
+    ts = np.zeros((12, 3, 3000), dtype=np.float32)              # Griffin-Lim waveforms
+    for k in range(12):
+        for c in range(3):
+            ts[k, c] = _griffin_lim(R[k, c])
+    pack.write_f16(out_dir / hf / "recon_timeseries.f16", ts)
+    print(f"[{hf}] wrote reconstructions {R.shape} + Griffin-Lim time-series {ts.shape} ({method})")
 
 
 def main():

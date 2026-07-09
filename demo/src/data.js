@@ -62,6 +62,22 @@ export async function loadModel(model) {
   } catch {
     /* reconstruction file absent — card falls back to spectral envelope */
   }
+  // Griffin-Lim reconstruction waveform (12,3,3000), optional
+  try {
+    const S = 3000;
+    const tsB = await fetchBuffer(`${model}/recon_timeseries.f16`);
+    const ts = new Uint16Array(tsB);
+    prototypes.forEach((p, k) => {
+      p.reconWave = [0, 1, 2].map((c) => {
+        const out = new Float32Array(S);
+        const base = (k * 3 + c) * S;
+        for (let i = 0; i < S; i++) out[i] = halfToFloat(ts[base + i]);
+        return out;
+      });
+    });
+  } catch {
+    /* time-series absent */
+  }
 
   const xy = new Float32Array(xyB);
   const n = xy.length / 2;

@@ -72,6 +72,17 @@ export function PrototypeCard({ card, compact }) {
         </div>
       )}
 
+      {!compact && card.reconWave && (
+        <div className="block">
+          <h4>Reconstructed signal (Griffin-Lim)</h4>
+          <Waveform channels={card.reconWave} />
+          <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
+            30 s waveform recovered from the reconstruction by inverse STFT
+            (phase estimated via Griffin-Lim).
+          </p>
+        </div>
+      )}
+
       <div className="block">
         <h4>Discovered rule</h4>
         <div className="rule">
