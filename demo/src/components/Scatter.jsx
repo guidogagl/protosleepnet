@@ -238,7 +238,7 @@ export default function Scatter({
       )}
 
       <div className="scatter-label">
-        UMAP · 128-D epoch embedding
+        PaCMAP · 128-D epoch embedding
         <span>{data ? `${data.n.toLocaleString()} epochs` : ""}</span>
       </div>
       <div className="scatter-hint">

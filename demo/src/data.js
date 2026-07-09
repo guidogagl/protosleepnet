@@ -78,6 +78,27 @@ export async function loadModel(model) {
   } catch {
     /* time-series absent */
   }
+  // per-prototype Integrated-Gradients attribution + its representative epoch
+  // (12,3,29,129), optional → attach igAttr / igEpoch as [3 × Float32Array(TF)]
+  const decodeGrid = (buf) => {
+    const u = new Uint16Array(buf);
+    return (k) => [0, 1, 2].map((c) => {
+      const out = new Float32Array(TF);
+      const base = (k * 3 + c) * TF;
+      for (let i = 0; i < TF; i++) out[i] = halfToFloat(u[base + i]);
+      return out;
+    });
+  };
+  try {
+    const [aB, eB] = await Promise.all([
+      fetchBuffer(`${model}/ig_attr.f16`),
+      fetchBuffer(`${model}/ig_epoch.f16`),
+    ]);
+    const attr = decodeGrid(aB), epoch = decodeGrid(eB);
+    prototypes.forEach((p, k) => { p.igAttr = attr(k); p.igEpoch = epoch(k); });
+  } catch {
+    /* IG arrays absent */
+  }
 
   const xy = new Float32Array(xyB);
   const n = xy.length / 2;

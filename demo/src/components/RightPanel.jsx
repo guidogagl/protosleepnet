@@ -66,7 +66,7 @@ export function PrototypeCard({ card, compact }) {
           <h4>Hybrid reconstruction · EEG / EOG / EMG</h4>
           <Spectrogram specs={card.reconSpecs} T={STFT_SHAPE.T} F={STFT_SHAPE.F} />
           <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
-            Optimised prototypical input (mean of the 256 hybrid reconstructions) —
+            Optimised prototypical input (median of the 256 hybrid reconstructions) —
             the spectrogram the model treats as the essence of this prototype.
           </p>
         </div>
@@ -74,11 +74,26 @@ export function PrototypeCard({ card, compact }) {
 
       {!compact && card.reconWave && (
         <div className="block">
-          <h4>Reconstructed signal (Griffin-Lim)</h4>
+          <h4>Reconstructed signal · phase-estimated</h4>
           <Waveform channels={card.reconWave} />
           <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
-            30 s waveform recovered from the reconstruction by inverse STFT
-            (phase estimated via Griffin-Lim).
+            30 s waveform from the medoid reconstruction via inverse STFT
+            (phase is not stored → estimated by Griffin-Lim; shape is indicative).
+          </p>
+        </div>
+      )}
+
+      {!compact && card.igAttr && card.igEpoch && (
+        <div className="block">
+          <h4>Why this prototype · IG attribution</h4>
+          <div className="chan"><h5>representative epoch</h5>
+            <Spectrogram specs={card.igEpoch} T={STFT_SHAPE.T} F={STFT_SHAPE.F} /></div>
+          <div className="chan" style={{ marginTop: 8 }}><h5>attribution (relevance)</h5>
+            <Spectrogram specs={card.igAttr.map((ch) => ch.map((v) => (v > 0 ? v : 0)))}
+              T={STFT_SHAPE.T} F={STFT_SHAPE.F} cmap="inferno" /></div>
+          <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
+            Integrated Gradients on <b>−‖encode(x)−p<sub>{card.idx}</sub>‖²</b>: the bright
+            time–frequency regions are what pull an epoch toward this prototype.
           </p>
         </div>
       )}
@@ -170,9 +185,20 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
       </div>
 
       <div className="block">
-        <h4>Spectrogram (physioex seqsleepnet)</h4>
-        {specs && <Spectrogram specs={specs} T={STFT_SHAPE.T} F={STFT_SHAPE.F} />}
-        {!specs && !err && <div className="loader">computing STFT…</div>}
+        <h4>Spectrogram — this epoch vs prototype P{epochRec.proto}</h4>
+        <div className="chan"><h5>input epoch ({trueStage || "unscored"})</h5>
+          {specs && <Spectrogram specs={specs} T={STFT_SHAPE.T} F={STFT_SHAPE.F} />}
+          {!specs && !err && <div className="loader">computing STFT…</div>}</div>
+        {matched?.reconSpecs && (
+          <div className="chan" style={{ marginTop: 8 }}>
+            <h5>matched prototype P{epochRec.proto} · {matched.dominant_stage} (reconstruction)</h5>
+            <Spectrogram specs={matched.reconSpecs} T={STFT_SHAPE.T} F={STFT_SHAPE.F} />
+          </div>
+        )}
+        <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
+          The match is by L2 in the 128-D embedding — the two spectrograms should share
+          the features that define P{epochRec.proto} (see its IG attribution).
+        </p>
       </div>
 
       <div className="block">
@@ -192,7 +218,7 @@ function Overview({ manifest, data, backbone }) {
       <div className="block" style={{ marginTop: 0 }}>
         <h4>The atlas</h4>
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6 }}>
-          Each point is one 30-second epoch of SleepEDF, placed by a UMAP of ProtoSleepNet's
+          Each point is one 30-second epoch of SleepEDF, placed by a PaCMAP of ProtoSleepNet's
           128-dimensional embedding space. The <b style={{ color: "#fff" }}>◆ diamonds</b> are the
           model's <b style={{ color: "#fff" }}>12 learned prototypes</b>. Click any point to see its
           true stage, the model's prediction, and why it matches its nearest prototype — or click a
@@ -207,7 +233,18 @@ function Overview({ manifest, data, backbone }) {
           <div className="kv"><span className="k">Nights</span><span className="v tnum">{data.subjectsMeta.length}</span></div>
           <div className="kv"><span className="k">Accuracy</span><span className="v tnum">{(meta.accuracy * 100).toFixed(1)}%</span></div>
           <div className="kv"><span className="k">Prototypes</span><span className="v tnum">12</span></div>
+          {meta.nn_proto_agreement != null && (
+            <div className="kv"><span className="k">PaCMAP L2 faithfulness</span>
+              <span className="v tnum">{(meta.nn_proto_agreement * 100).toFixed(0)}%</span></div>
+          )}
         </div>
+      )}
+      {meta?.nn_proto_agreement != null && (
+        <p className="faint" style={{ fontSize: 11, marginTop: 4 }}>
+          Faithfulness = share of epochs whose <i>nearest prototype on this 2-D map</i> is also
+          the true nearest in 128-D. Projections are lossy, so read the actual match from the
+          point colour (Prototype mode) and the detail panel — not raw proximity.
+        </p>
       )}
     </div>
   );

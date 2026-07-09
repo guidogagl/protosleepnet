@@ -5,13 +5,21 @@ import { STAGES, STAGE_COLOR } from "../theme.js";
 const VIRIDIS = [
   [68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37],
 ];
-function viridis(t) {
+// inferno-like ramp for IG relevance (dark → magenta → orange → yellow)
+const INFERNO = [
+  [0, 0, 4], [40, 11, 84], [101, 21, 110], [159, 42, 99], [212, 72, 66],
+  [245, 125, 21], [250, 193, 39], [252, 255, 164],
+];
+function ramp(stops, t) {
   t = Math.max(0, Math.min(1, t));
-  const x = t * (VIRIDIS.length - 1);
+  const x = t * (stops.length - 1);
   const i = Math.floor(x), f = x - i;
-  const a = VIRIDIS[i], b = VIRIDIS[Math.min(i + 1, VIRIDIS.length - 1)];
+  const a = stops[i], b = stops[Math.min(i + 1, stops.length - 1)];
   return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
 }
+const viridis = (t) => ramp(VIRIDIS, t);
+const inferno = (t) => ramp(INFERNO, t);
+const CMAPS = { viridis, inferno };
 
 const CH_NAMES = ["EEG", "EOG", "EMG"];
 const CH_COLOR = ["#5ac8fa", "#8b7bf0", "#46d39a"];
@@ -51,7 +59,8 @@ export function Waveform({ channels, height = 46, epochSec = 30 }) {
 }
 
 // ── multi-channel spectrogram heatmap ──
-export function Spectrogram({ specs, T, F, chanHeight = 48, maxFreqBin = 103, fs = 100, nfft = 256, epochSec = 30 }) {
+export function Spectrogram({ specs, T, F, chanHeight = 48, maxFreqBin = 103, fs = 100, nfft = 256, epochSec = 30, cmap = "viridis" }) {
+  const cfn = CMAPS[cmap] || viridis;
   const ref = useRef(null);
   useEffect(() => {
     const c = ref.current, wrap = c.parentElement;
@@ -75,7 +84,7 @@ export function Spectrogram({ specs, T, F, chanHeight = 48, maxFreqBin = 103, fs
       for (let t = 0; t < T; t++) {
         for (let f = 0; f < maxFreqBin; f++) {
           const v = (spec[t * F + f] - lo) / rng;
-          const [r, g, b] = viridis(v);
+          const [r, g, b] = cfn(v);
           const px = ((maxFreqBin - 1 - f) * T + t) * 4; // flip freq (low at bottom)
           img.data[px] = r; img.data[px + 1] = g; img.data[px + 2] = b; img.data[px + 3] = 255;
         }
