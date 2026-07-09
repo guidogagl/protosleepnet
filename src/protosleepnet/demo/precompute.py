@@ -8,7 +8,7 @@ over **all** SleepEDF subjects:
   - per-epoch embedding h = epoch_encode(x, quantize=False)      (matching space)
   - per-epoch NON-quantized prediction via sliding-window voting  (displayed)
   - nearest prototype (squared-L2 to the codebook) + distance     (the match)
-  - a UMAP of all epoch embeddings, with the 12 prototypes co-embedded
+  - a PaCMAP of all epoch embeddings, with the 12 prototypes co-embedded in the fit
   - the 12 prototype cards (assembled from committed reconstruction JSON)
 Shared across models (same SleepEDF signals): per-subject raw waveform
 (physioex ``raw`` pipeline, float16) + a small STFT reference fixture for
@@ -175,7 +175,8 @@ def compute_signals(out_dir: Path, max_subjects=None, n_ref_epochs=6):
 
 # ── per-model pass ───────────────────────────────────────────────────────
 def compute_model(backbone, checkpoint, codebook_path, committed_root, out_dir,
-                  subject_order, device, umap_kwargs, max_subjects=None):
+                  subject_order, device, seed, compare_umap, umap_kwargs,
+                  max_subjects=None):
     cfg = MODELS[backbone]
     hf, committed, L = cfg["hf"], cfg["committed"], cfg["seq_len"]
     print(f"\n[{hf}] backbone={backbone} L={L}")
@@ -226,18 +227,36 @@ def compute_model(backbone, checkpoint, codebook_path, committed_root, out_dir,
     PROBA = np.concatenate(xs_proba, 0)
     SUBJ = np.concatenate(xs_subj, 0)
     EPOCH = np.concatenate(xs_epoch, 0)
-    print(f"[{hf}] {H.shape[0]} epochs, fitting UMAP ...")
+    print(f"[{hf}] {H.shape[0]} epochs, projecting with PaCMAP ...")
 
     # prototype assignment (squared-L2 argmin), distance = sqrt
     dist_sq = compute_l2_sq_distances_np(H, codebook)   # (N, M)
     PROTO = dist_sq.argmin(1).astype(np.int64)
     DIST = np.sqrt(np.clip(dist_sq[np.arange(len(H)), PROTO], 0, None)).astype(np.float32)
 
-    # UMAP on epoch embeddings; co-embed prototypes with transform()
-    from umap import UMAP
-    reducer = UMAP(**umap_kwargs)
-    XY = reducer.fit_transform(H).astype(np.float32)          # (N, 2)
-    PROTO_XY = reducer.transform(codebook).astype(np.float32)  # (M, 2)
+    # PaCMAP preserves BOTH local and global structure better than UMAP, and we
+    # co-embed the 12 prototypes IN the fit (union) rather than transform()-after,
+    # so their coords reflect the same optimization as the epochs.
+    from pacmap import PaCMAP
+    reducer = PaCMAP(n_components=2, random_state=seed)
+    union = np.vstack([H, codebook]).astype(np.float32)
+    emb = np.asarray(reducer.fit_transform(union, init="pca"), dtype=np.float32)
+    XY, PROTO_XY = emb[:len(H)], emb[len(H):]
+
+    # faithfulness: fraction of epochs whose 2-D-nearest prototype == the true
+    # 128-D-L2-nearest prototype (the assignment that actually drives matching).
+    def _agreement(xy, pxy):
+        return float((compute_l2_sq_distances_np(xy, pxy).argmin(1) == PROTO).mean())
+    agree = _agreement(XY, PROTO_XY)
+    metrics = {"projection": "pacmap", "nn_proto_agreement": agree}
+    print(f"[{hf}] PaCMAP nearest-prototype agreement = {agree:.3f}")
+    if compare_umap:
+        from umap import UMAP
+        u = UMAP(**umap_kwargs)
+        uxy = u.fit_transform(H).astype(np.float32)
+        upxy = u.transform(codebook).astype(np.float32)
+        metrics["umap_nn_proto_agreement"] = _agreement(uxy, upxy)
+        print(f"[{hf}] UMAP  nearest-prototype agreement = {metrics['umap_nn_proto_agreement']:.3f}")
 
     # normalize coords to a stable [-1, 1] box (nice for the WebGL scatter)
     lo, hi = XY.min(0), XY.max(0)
@@ -280,54 +299,102 @@ def compute_model(backbone, checkpoint, codebook_path, committed_root, out_dir,
     print(f"[{hf}] done. epochs={H.shape[0]} acc={acc:.4f} "
           f"proto range={PROTO.min()}..{PROTO.max()}")
     return {"n_epochs": int(H.shape[0]), "n_subjects": len(model_subjects),
-            "accuracy": acc, "seq_len": L, "backbone": backbone}
+            "accuracy": acc, "seq_len": L, "backbone": backbone, **metrics}
 
 
-def _griffin_lim(db_TF, n_iter=60):
-    """Estimate a 30 s waveform from a log-power spectrogram (T=29, F=129 dB)
-    via Griffin-Lim (phase is not stored, so we recover it iteratively).
-    Matches the XSleepNet STFT geometry: hamming/200, hop 100, nfft 256, 100 Hz
-    -> 200 + 28*100 = 3000 samples. Amplitude is arbitrary (display auto-scales).
+def _griffin_lim(db_TF, n_iter=200, momentum=0.99):
+    """Estimate a 30 s waveform from ONE coherent log-power spectrogram
+    (T=29, F=129 dB) via fast Griffin-Lim (Perraudin momentum). Phase is not
+    stored, so it is recovered iteratively; run on a single medoid spectrogram
+    (never the cross-epoch average, which has no coherent phase to recover).
+
+    Inversion of XSleepNet's one-sided PSD-dB back to an STFT magnitude: only
+    the RELATIVE per-bin magnitude matters for GL (istft/stft are inverse in
+    scipy's convention and the loop re-imposes |STFT|=mag each step), so we undo
+    the one-sided ×2 on interior bins (the sole relative distortion) and map
+    dB->amplitude with 10^(dB/20). Geometry: hamming/200, hop 100, nfft 256,
+    100 Hz -> 200 + 28*100 = 3000 samples. Amplitude is arbitrary (auto-scaled).
     """
     from scipy.signal import stft, istft
     kw = dict(fs=100, window="hamming", nperseg=200, noverlap=100, nfft=256)
     mag = np.power(10.0, np.asarray(db_TF).T / 20.0)  # (F=129, T=29) amplitude
+    mag[1:-1, :] /= np.sqrt(2.0)                       # undo one-sided doubling
     rng = np.random.default_rng(0)
-    S = mag * np.exp(2j * np.pi * rng.random(mag.shape))
+    ph = np.exp(2j * np.pi * rng.random(mag.shape))
+    prev = mag * ph
     for _ in range(n_iter):
-        _, x = istft(S, input_onesided=True, boundary=False, **kw)
+        _, x = istft(prev, input_onesided=True, boundary=False, **kw)
         _, _, X = stft(x, boundary=None, padded=False, **kw)
         T = mag.shape[1]
         X = X[:, :T] if X.shape[1] >= T else np.pad(X, ((0, 0), (0, T - X.shape[1])))
-        S = mag * np.exp(1j * np.angle(X))
-    _, x = istft(S, input_onesided=True, boundary=False, **kw)
+        ph = X / np.maximum(np.abs(X), 1e-8)
+        cur = mag * ph
+        S = cur + momentum * (cur - prev)   # fast GL momentum
+        prev = cur
+        _, x = istft(S, input_onesided=True, boundary=False, **kw)
+        _, _, X = stft(x, boundary=None, padded=False, **kw)
+        X = X[:, :T] if X.shape[1] >= T else np.pad(X, ((0, 0), (0, T - X.shape[1])))
+        prev = mag * (X / np.maximum(np.abs(X), 1e-8))
+    _, x = istft(prev, input_onesided=True, boundary=False, **kw)
     x = np.asarray(x, dtype=np.float32)
     return (x[:3000] if len(x) >= 3000 else np.pad(x, (0, 3000 - len(x)))).astype(np.float32)
 
 
+def _medoid(arr):
+    """Return the single sample (C,T,F) closest to the per-cell median — a
+    coherent representative spectrogram (unlike the average of all N)."""
+    med = np.median(arr, axis=0)
+    d = np.abs(arr - med).reshape(len(arr), -1).sum(1)
+    return arr[int(d.argmin())]
+
+
 def write_reconstructions(backbone, recon_root, method, out_dir):
-    """Ship the paper's per-prototype reconstruction (mean over the optimized
-    samples) as a (12, 3, 29, 129) dB array, plus a Griffin-Lim time-series
-    (12, 3, 3000). Reuses the committed-M12 reconstruction pipeline output,
-    built with the same vq_kmeans/12 codebook as the atlas, so indices align.
+    """Per-prototype, ship into <model>/:
+      reconstructions.f16 (12,3,29,129) — MEDIAN over the optimized samples
+        (sharper/robust than mean) — the heatmap.
+      recon_timeseries.f16 (12,3,3000) — fast Griffin-Lim of the MEDOID sample
+        (a single coherent spectrogram; phase-estimated, display-only).
+      ig_attr.f16 / ig_epoch.f16 (12,3,29,129) — the committed Integrated-
+        Gradients attribution + its representative epoch (why the epoch matches).
+    All reuse the M12 reconstruction pipeline output (same vq_kmeans/12 codebook
+    as the atlas, so indices align).
     """
     cfg = MODELS[backbone]
     hf, committed = cfg["hf"], cfg["committed"]
     mdir = Path(recon_root) / committed / method
-    recs = []
+    med_specs, wave_src = [], []
     for k in range(12):
-        arr = np.load(mdir / f"proto_{k:03d}" / "epochs.npy")  # (N, 3, 29, 129)
-        recs.append(arr.mean(axis=0))                          # (3, 29, 129)
-    R = np.stack(recs).astype(np.float32)                       # (12, 3, 29, 129)
+        arr = np.load(mdir / f"proto_{k:03d}" / "epochs.npy")  # (N, 3, 29, 129) dB
+        med_specs.append(np.median(arr, axis=0))               # (3, 29, 129)
+        wave_src.append(_medoid(arr))                          # (3, 29, 129)
+    R = np.stack(med_specs).astype(np.float32)
     (out_dir / hf).mkdir(parents=True, exist_ok=True)
     pack.write_f16(out_dir / hf / "reconstructions.f16", R)
 
-    ts = np.zeros((12, 3, 3000), dtype=np.float32)              # Griffin-Lim waveforms
+    ts = np.zeros((12, 3, 3000), dtype=np.float32)
     for k in range(12):
         for c in range(3):
-            ts[k, c] = _griffin_lim(R[k, c])
+            ts[k, c] = _griffin_lim(wave_src[k][c])
     pack.write_f16(out_dir / hf / "recon_timeseries.f16", ts)
-    print(f"[{hf}] wrote reconstructions {R.shape} + Griffin-Lim time-series {ts.shape} ({method})")
+
+    # Integrated-Gradients attribution (already computed; no GPU here)
+    le = Path(recon_root) / committed / "local_explanations"
+    ig_attr = np.zeros((12, 3, 29, 129), dtype=np.float32)
+    ig_epoch = np.zeros_like(ig_attr)
+    have_ig = True
+    for k in range(12):
+        ap = le / f"proto_{k:03d}" / "local_attr.npy"
+        ep = le / f"proto_{k:03d}" / "local_epoch.npy"
+        if ap.exists() and ep.exists():
+            ig_attr[k] = np.load(ap).reshape(3, 29, 129)
+            ig_epoch[k] = np.load(ep).reshape(3, 29, 129)
+        else:
+            have_ig = False
+    if have_ig:
+        pack.write_f16(out_dir / hf / "ig_attr.f16", ig_attr)
+        pack.write_f16(out_dir / hf / "ig_epoch.f16", ig_epoch)
+    print(f"[{hf}] recon median {R.shape} + GL medoid {ts.shape}"
+          f"{' + IG' if have_ig else ' (no IG arrays)'} ({method})")
 
 
 def main():
@@ -349,6 +416,8 @@ def main():
                     help="Debug: limit number of subjects")
     ap.add_argument("--skip_signals", action="store_true",
                     help="Reuse an existing signals/ pass")
+    ap.add_argument("--compare_umap", action="store_true",
+                    help="Also fit UMAP and report its nearest-proto agreement (dev comparison)")
     ap.add_argument("--recon_root", default=None,
                     help="Root of the M12 reconstruction outputs "
                          "(<recon_root>/<committed_model>/<method>/proto_XXX/epochs.npy)")
@@ -368,7 +437,9 @@ def main():
         if mpath.exists():
             manifest = json.load(open(mpath))
             manifest["reconstruction"] = {"method": args.recon_method,
+                                          "aggregate": "median", "waveform": "griffin-lim (medoid)",
                                           "shape": [3, 29, 129], "scale": "dB"}
+            manifest["ig"] = {"shape": [3, 29, 129], "source": "local_explanations (IG, zero baseline)"}
             json.dump(manifest, open(mpath, "w"), indent=2)
         print("Reconstructions backfilled.")
         return
@@ -407,7 +478,7 @@ def main():
             raise SystemExit(f"--codebook-{b} is required (M=12 codebook path)")
         meta = compute_model(
             b, ckpt, cb, committed_root, out_dir, subject_order, device,
-            umap_kwargs, max_subjects=args.max_subjects,
+            args.seed, args.compare_umap, umap_kwargs, max_subjects=args.max_subjects,
         )
         model_meta[MODELS[b]["hf"]] = meta
         if args.recon_root:
@@ -424,12 +495,15 @@ def main():
                  "window": "hamming", "n_time": 29, "n_freq": 129,
                  "log_scale": "10*log10(|X|^2)", "scipy_spectrogram": True},
         "proto": {"m": 12, "match": "argmin squared-L2"},
+        "projection": "pacmap",
         "n_subjects": len(subject_order),
         "models": model_meta,
     }
     if args.recon_root:
         manifest["reconstruction"] = {"method": args.recon_method,
+                                      "aggregate": "median", "waveform": "griffin-lim (medoid)",
                                       "shape": [3, 29, 129], "scale": "dB"}
+        manifest["ig"] = {"shape": [3, 29, 129], "source": "local_explanations (IG, zero baseline)"}
     with open(out_dir / "manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
     print(f"\nBundle written to {out_dir}")
