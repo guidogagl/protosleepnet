@@ -283,6 +283,25 @@ def compute_model(backbone, checkpoint, codebook_path, committed_root, out_dir,
             "accuracy": acc, "seq_len": L, "backbone": backbone}
 
 
+def write_reconstructions(backbone, recon_root, method, out_dir):
+    """Ship the paper's per-prototype reconstruction (mean over the optimized
+    samples) as a (12, 3, 29, 129) dB array. Reuses the committed-M12
+    reconstruction pipeline output, which was built with the same
+    vq_kmeans/12 codebook as the atlas, so prototype indices align.
+    """
+    cfg = MODELS[backbone]
+    hf, committed = cfg["hf"], cfg["committed"]
+    mdir = Path(recon_root) / committed / method
+    recs = []
+    for k in range(12):
+        arr = np.load(mdir / f"proto_{k:03d}" / "epochs.npy")  # (N, 3, 29, 129)
+        recs.append(arr.mean(axis=0))                          # (3, 29, 129)
+    R = np.stack(recs).astype(np.float32)                       # (12, 3, 29, 129)
+    (out_dir / hf).mkdir(parents=True, exist_ok=True)
+    pack.write_f16(out_dir / hf / "reconstructions.f16", R)
+    print(f"[{hf}] wrote reconstructions {R.shape} ({method})")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Precompute the demo static bundle")
     ap.add_argument("--out_dir", required=True)
@@ -302,7 +321,29 @@ def main():
                     help="Debug: limit number of subjects")
     ap.add_argument("--skip_signals", action="store_true",
                     help="Reuse an existing signals/ pass")
+    ap.add_argument("--recon_root", default=None,
+                    help="Root of the M12 reconstruction outputs "
+                         "(<recon_root>/<committed_model>/<method>/proto_XXX/epochs.npy)")
+    ap.add_argument("--recon_method", default="hybrid",
+                    choices=["hybrid", "data_driven", "model_driven"])
+    ap.add_argument("--reconstructions_only", action="store_true",
+                    help="Backfill only <model>/reconstructions.f16 into an existing bundle")
     args = ap.parse_args()
+
+    out_dir = Path(args.out_dir)
+    if args.reconstructions_only:
+        if not args.recon_root:
+            raise SystemExit("--recon_root is required with --reconstructions_only")
+        for b in args.backbones:
+            write_reconstructions(b, args.recon_root, args.recon_method, out_dir)
+        mpath = out_dir / "manifest.json"
+        if mpath.exists():
+            manifest = json.load(open(mpath))
+            manifest["reconstruction"] = {"method": args.recon_method,
+                                          "shape": [3, 29, 129], "scale": "dB"}
+            json.dump(manifest, open(mpath, "w"), indent=2)
+        print("Reconstructions backfilled.")
+        return
 
     device = (torch.device(f"cuda:{args.gpu_id}")
               if args.gpu_id is not None and torch.cuda.is_available()
@@ -341,6 +382,8 @@ def main():
             umap_kwargs, max_subjects=args.max_subjects,
         )
         model_meta[MODELS[b]["hf"]] = meta
+        if args.recon_root:
+            write_reconstructions(b, args.recon_root, args.recon_method, out_dir)
 
     # 3) manifest
     manifest = {
@@ -356,6 +399,9 @@ def main():
         "n_subjects": len(subject_order),
         "models": model_meta,
     }
+    if args.recon_root:
+        manifest["reconstruction"] = {"method": args.recon_method,
+                                      "shape": [3, 29, 129], "scale": "dB"}
     with open(out_dir / "manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
     print(f"\nBundle written to {out_dir}")
