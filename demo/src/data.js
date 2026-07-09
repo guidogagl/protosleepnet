@@ -46,6 +46,23 @@ export async function loadModel(model) {
       fetchJSON(`${model}/subjects.json`),
     ]);
 
+  // per-prototype hybrid reconstruction (12,3,29,129) dB, optional
+  const TF = 29 * 129;
+  try {
+    const recB = await fetchBuffer(`${model}/reconstructions.f16`);
+    const rec = new Uint16Array(recB);
+    prototypes.forEach((p, k) => {
+      p.reconSpecs = [0, 1, 2].map((c) => {
+        const out = new Float32Array(TF);
+        const base = (k * 3 + c) * TF;
+        for (let i = 0; i < TF; i++) out[i] = halfToFloat(rec[base + i]);
+        return out;
+      });
+    });
+  } catch {
+    /* reconstruction file absent — card falls back to spectral envelope */
+  }
+
   const xy = new Float32Array(xyB);
   const n = xy.length / 2;
   const x = new Float32Array(n);

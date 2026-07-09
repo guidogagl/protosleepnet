@@ -61,6 +61,17 @@ export function PrototypeCard({ card, compact }) {
         <LabelDistribution dist={card.sleepedf_label_distribution} />
       </div>
 
+      {!compact && card.reconSpecs && (
+        <div className="block">
+          <h4>Hybrid reconstruction · EEG / EOG / EMG</h4>
+          <Spectrogram specs={card.reconSpecs} T={STFT_SHAPE.T} F={STFT_SHAPE.F} />
+          <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
+            Optimised prototypical input (mean of the 256 hybrid reconstructions) —
+            the spectrogram the model treats as the essence of this prototype.
+          </p>
+        </div>
+      )}
+
       <div className="block">
         <h4>Discovered rule</h4>
         <div className="rule">
