@@ -193,10 +193,14 @@ select:focus, .input:focus { outline: none; border-color: var(--accent); }
 .bar .center-tick { position: absolute; left: 50%; top: -1px; bottom: -1px; width: 1px; background: var(--line-strong); }
 
 /* probability bars */
-.prob { display: flex; flex-direction: column; gap: 5px; }
+.prob { display: flex; flex-direction: column; gap: 6px; }
 .prob .row { display: grid; grid-template-columns: 34px 1fr 40px; align-items: center; gap: 8px; font-size: 12px; }
-.prob .track { height: 14px; background: var(--elev); border-radius: 4px; overflow: hidden; }
-.prob .fill { height: 100%; border-radius: 4px; }
+.prob .track {
+  height: 16px; background: rgba(255, 255, 255, 0.09); border-radius: 5px; overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.prob .fill { height: 100%; border-radius: 5px; min-width: 2px; }
+.prob .row.pred .track { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22); }
 .prob .row.truth .name { font-weight: 700; }
 .prob .val { text-align: right; }
 

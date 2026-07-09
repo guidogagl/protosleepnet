@@ -120,7 +120,7 @@ export function ProbBars({ proba, trueLabel, predLabel }) {
               <span className="fill" style={{
                 width: `${Math.max(v * 100, v > 0 ? 1.5 : 0)}%`,
                 background: STAGE_COLOR[s],
-                opacity: isPred ? 1 : 0.55,
+                opacity: isPred ? 1 : 0.7,
               }} />
             </span>
             <span className="val tnum" style={{ fontWeight: isPred ? 700 : 400 }}>{(v * 100).toFixed(0)}%</span>
