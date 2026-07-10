@@ -113,6 +113,34 @@ def embed_subject(model, inputs, device, batch_size=256):
     return np.concatenate(out, axis=0).astype(np.float32)
 
 
+def epoch_ig_subject(model, inputs, targets, device, steps=64, group=8):
+    """Per-EPOCH Integrated-Gradients attribution toward each epoch's own
+    matched prototype: IG of f(x) = -||epoch_encode(x) - p_matched||^2, zero
+    baseline. inputs: (1, n, C, T, F) spectrogram; targets: (n, d) codebook
+    rows for the matched prototype. Returns (n, C, T, F) float32.
+
+    Gradient flows to the INPUT only (model params stay frozen). cudnn must be
+    off for LSTM backward in eval (set by the caller).
+    """
+    x_all = inputs.squeeze(0).to(device)                 # (n, C, T, F)
+    n, C, T, Fd = x_all.shape
+    tgt = torch.as_tensor(np.asarray(targets), device=device, dtype=torch.float32)  # (n, d)
+    alphas = torch.linspace(0, 1, steps, device=device).view(1, steps, 1, 1, 1)
+    out = np.zeros((n, C, T, Fd), dtype=np.float32)
+    for i in range(0, n, group):
+        xe = x_all[i:i + group]                          # (g, C, T, F)
+        g = xe.shape[0]
+        X = (xe.unsqueeze(1) * alphas).reshape(g * steps, 1, C, T, Fd)
+        X = X.clone().detach().requires_grad_(True)      # baseline 0 → path = alpha·x
+        h = model.epoch_encode(X, quantize=False).squeeze(1)          # (g*steps, d)
+        te = tgt[i:i + g].repeat_interleave(steps, dim=0)             # (g*steps, d)
+        f = -((h - te) ** 2).sum(dim=1).sum()
+        grads, = torch.autograd.grad(f, X)               # (g*steps, 1, C, T, F)
+        avg = grads.squeeze(1).reshape(g, steps, C, T, Fd).mean(dim=1)  # (g, C, T, F)
+        out[i:i + g] = (xe * avg).detach().cpu().numpy()  # IG = (x-0)·mean_α ∂f/∂x
+    return out
+
+
 # ── shared signals: per-subject raw waveform + STFT reference ────────────
 def compute_signals(out_dir: Path, max_subjects=None, n_ref_epochs=6):
     """Write per-subject raw waveforms and a small STFT-reference fixture.
@@ -397,6 +425,35 @@ def write_reconstructions(backbone, recon_root, method, out_dir):
           f"{' + IG' if have_ig else ' (no IG arrays)'} ({method})")
 
 
+def write_epoch_ig(backbone, checkpoint, codebook_path, out_dir, device,
+                   steps, group, max_subjects=None):
+    """Backfill per-EPOCH IG attribution into <model>/ig/<sid>.ig.bin (f16,
+    (n,3,29,129), trimmed window) for lazy Range-fetch. Target per epoch = its
+    matched prototype (argmin L2), matching the atlas assignment."""
+    cfg = MODELS[backbone]
+    hf = cfg["hf"]
+    model = load_frozen_model(backbone, device, checkpoint_path=checkpoint)
+    codebook = load_codebook(backbone, codebook_path=codebook_path)
+    model.set_codebook(codebook)
+    _, loader = build_full_loader(DATASET, channels=CHANNELS, pipeline="seqsleepnet")
+    ig_dir = out_dir / hf / "ig"
+    ig_dir.mkdir(parents=True, exist_ok=True)
+    for si, batch in enumerate(tqdm(loader, desc=f"{hf} IG")):
+        if max_subjects is not None and si >= max_subjects:
+            break
+        sid = batch["subject"][0]["id"]
+        inputs = stack_channels(batch)                        # (1, n, C, T, F)
+        labels = batch["labels"].reshape(-1).cpu().numpy().astype(np.int64)
+        s, e = trim_window(labels)
+        inputs_w = inputs[:, s:e]
+        h = embed_subject(model, inputs_w, device)            # (n, d)
+        proto = compute_l2_sq_distances_np(h, codebook).argmin(1)
+        targets = codebook[proto]                             # (n, d)
+        ig = epoch_ig_subject(model, inputs_w, targets, device, steps=steps, group=group)
+        pack.write_f16(ig_dir / f"{sid}.ig.bin", ig)
+    print(f"[{hf}] wrote per-epoch IG -> {ig_dir}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Precompute the demo static bundle")
     ap.add_argument("--out_dir", required=True)
@@ -425,6 +482,10 @@ def main():
                     choices=["hybrid", "data_driven", "model_driven"])
     ap.add_argument("--reconstructions_only", action="store_true",
                     help="Backfill only <model>/reconstructions.f16 into an existing bundle")
+    ap.add_argument("--epoch_ig_only", action="store_true",
+                    help="Backfill per-epoch IG (<model>/ig/<sid>.ig.bin) into an existing bundle")
+    ap.add_argument("--ig_steps", type=int, default=64)
+    ap.add_argument("--ig_group", type=int, default=8)
     args = ap.parse_args()
 
     out_dir = Path(args.out_dir)
@@ -451,6 +512,26 @@ def main():
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.epoch_ig_only:
+        os.environ.setdefault("PHYSIOEX_DATA", os.environ.get("PHYSIOEX_DATA", ""))
+        torch.backends.cudnn.enabled = False  # LSTM backward in eval
+        for b in args.backbones:
+            ckpt = getattr(args, f"ckpt_{b}") or str(get_paths(b, m=12)["checkpoint"])
+            cb = getattr(args, f"cb_{b}")
+            if cb is None:
+                raise SystemExit(f"--codebook-{b} is required")
+            write_epoch_ig(b, ckpt, cb, out_dir, device,
+                           args.ig_steps, args.ig_group, max_subjects=args.max_subjects)
+        mpath = out_dir / "manifest.json"
+        if mpath.exists():
+            manifest = json.load(open(mpath))
+            manifest["ig_epoch"] = {"shape": [3, 29, 129], "dtype": "float16",
+                                    "layout": "<model>/ig/<sid>.ig.bin (n,3,29,129)",
+                                    "steps": args.ig_steps}
+            json.dump(manifest, open(mpath, "w"), indent=2)
+        print("Per-epoch IG backfilled.")
+        return
 
     committed_root = Path(
         args.committed_root
