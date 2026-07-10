@@ -156,4 +156,22 @@ export async function fetchEpochRaw(subjectId, epochIdx, C, S) {
   return out; // array of C Float32Array(S)
 }
 
+// Fetch a single epoch's per-epoch IG attribution via a Range request.
+// Layout: <model>/ig/<id>.ig.bin = float16 (n_epochs, C, T, F), row-major.
+export async function fetchEpochIG(model, subjectId, epochIdx, C = 3, T = 29, F = 129) {
+  const TF = T * F;
+  const bytesPerEpoch = C * TF * 2;
+  const start = epochIdx * bytesPerEpoch;
+  const r = await fetch(`${DATA_URL}/${model}/ig/${subjectId}.ig.bin`, {
+    headers: { Range: `bytes=${start}-${start + bytesPerEpoch - 1}` },
+  });
+  if (!r.ok && r.status !== 206) throw new Error(`ig ${subjectId}#${epochIdx}: ${r.status}`);
+  const u16 = new Uint16Array(await r.arrayBuffer());
+  return [0, 1, 2].map((c) => {
+    const ch = new Float32Array(TF);
+    for (let i = 0; i < TF; i++) ch[i] = halfToFloat(u16[c * TF + i]);
+    return ch;
+  });
+}
+
 export { DATA_URL };

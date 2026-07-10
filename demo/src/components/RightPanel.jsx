@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { STAGES, STAGE_COLOR, STAGE_LABEL } from "../theme.js";
-import { fetchEpochRaw } from "../data.js";
+import { fetchEpochRaw, fetchEpochIG } from "../data.js";
 import { spectrogram, STFT_SHAPE } from "../stft.js";
 import { Waveform, Spectrogram, ProbBars, DivergingBars, ChannelBars, EnvelopePlot } from "./plots.jsx";
 
@@ -11,6 +11,16 @@ const BAND_GREEK = {
 
 function StagePill({ stage }) {
   return <span className="pill" style={{ background: STAGE_COLOR[stage] || "#888" }}>{stage}</span>;
+}
+
+// IG relevance is sparse/signed → show |attribution| normalized to its 99th
+// percentile (clip outliers) so the driving regions are legible.
+function normRelevance(specs) {
+  const all = [];
+  specs.forEach((ch) => { for (let i = 0; i < ch.length; i++) all.push(Math.abs(ch[i])); });
+  all.sort((a, b) => a - b);
+  const p99 = all[Math.floor(all.length * 0.99)] || 1;
+  return specs.map((ch) => ch.map((v) => Math.min(Math.abs(v) / p99, 1)));
 }
 
 function bandItems(card) {
@@ -89,7 +99,7 @@ export function PrototypeCard({ card, compact }) {
           <div className="chan"><h5>representative epoch</h5>
             <Spectrogram specs={card.igEpoch} T={STFT_SHAPE.T} F={STFT_SHAPE.F} /></div>
           <div className="chan" style={{ marginTop: 8 }}><h5>attribution (relevance)</h5>
-            <Spectrogram specs={card.igAttr.map((ch) => ch.map((v) => (v > 0 ? v : 0)))}
+            <Spectrogram specs={normRelevance(card.igAttr)}
               T={STFT_SHAPE.T} F={STFT_SHAPE.F} cmap="inferno" /></div>
           <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
             Integrated Gradients on <b>−‖encode(x)−p<sub>{card.idx}</sub>‖²</b>: the bright
@@ -130,11 +140,12 @@ export function PrototypeCard({ card, compact }) {
 function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
   const [raw, setRaw] = useState(null);
   const [specs, setSpecs] = useState(null);
+  const [ig, setIg] = useState(null);
   const [err, setErr] = useState(null);
   const C = manifest.channels.length, S = manifest.raw.n_samples;
 
   useEffect(() => {
-    let alive = true; setRaw(null); setSpecs(null); setErr(null);
+    let alive = true; setRaw(null); setSpecs(null); setIg(null); setErr(null);
     fetchEpochRaw(epochRec.subjectId, epochRec.epochIdx, C, S)
       .then((chs) => {
         if (!alive) return;
@@ -142,8 +153,11 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
         setSpecs(chs.map((c) => spectrogram(c)));
       })
       .catch((e) => alive && setErr(String(e)));
+    fetchEpochIG(data.model, epochRec.subjectId, epochRec.epochIdx)
+      .then((g) => alive && setIg(normRelevance(g)))
+      .catch(() => {});
     return () => (alive = false);
-  }, [epochRec.subjectId, epochRec.epochIdx, C, S]);
+  }, [data.model, epochRec.subjectId, epochRec.epochIdx, C, S]);
 
   const matched = data.prototypes[epochRec.proto];
   const trueStage = epochRec.label === 255 ? null : STAGES[epochRec.label];
@@ -197,7 +211,17 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
         )}
         <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
           The match is by L2 in the 128-D embedding — the two spectrograms should share
-          the features that define P{epochRec.proto} (see its IG attribution).
+          the features that define P{epochRec.proto}.
+        </p>
+      </div>
+
+      <div className="block">
+        <h4>Why this epoch → P{epochRec.proto} · IG attribution</h4>
+        {ig ? <Spectrogram specs={ig} T={STFT_SHAPE.T} F={STFT_SHAPE.F} cmap="inferno" />
+          : <div className="loader">loading attribution…</div>}
+        <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
+          Integrated Gradients on <b>−‖encode(x)−p<sub>{epochRec.proto}</sub>‖²</b> for
+          <b> this epoch</b>: the bright time–frequency regions are what pull it toward P{epochRec.proto}.
         </p>
       </div>
 
