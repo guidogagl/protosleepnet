@@ -14,7 +14,7 @@ Usage:
 """
 import argparse
 from pathlib import Path
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, get_token
 
 
 def main():
@@ -24,7 +24,10 @@ def main():
     ap.add_argument("--bundle", required=True, type=Path)
     ap.add_argument("--space-dir", required=True, type=Path)
     ap.add_argument("--read-token", default=None, help="optional read token to set as the HF_TOKEN secret")
+    ap.add_argument("--read-token-file", default=None, help="file containing the read token (safer than a CLI arg)")
     args = ap.parse_args()
+    if args.read_token_file:
+        args.read_token = Path(args.read_token_file).read_text().strip()
     api = HfApi()
 
     # 1) private dataset repo + bundle
@@ -43,9 +46,14 @@ def main():
 
     # 3) wire the Space to the private data repo
     api.add_space_variable(args.space_repo, "DATASET_REPO", args.dataset_repo)
-    if args.read_token:
-        api.add_space_secret(args.space_repo, "HF_TOKEN", args.read_token)
-        print("[space] HF_TOKEN secret set")
+    secret = args.read_token or get_token()  # reuse the logged-in token if none given
+    if secret:
+        api.add_space_secret(args.space_repo, "HF_TOKEN", secret)
+        if args.read_token:
+            print("[space] HF_TOKEN secret set (provided read token)")
+        else:
+            print("[space] HF_TOKEN secret set from your login token — "
+                  "consider swapping for a fine-grained READ token in Space Settings.")
     else:
         print("[space] NOTE: add the HF_TOKEN read secret in Space Settings → Secrets")
 
