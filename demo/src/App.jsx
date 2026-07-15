@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { loadManifest, loadModel, loadSignalsIndex } from "./data.js";
+import { loadManifest, loadModel } from "./data.js";
 import Scatter from "./components/Scatter.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import Hypnogram from "./components/Hypnogram.jsx";
@@ -29,9 +29,8 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        const [m, s] = await Promise.all([loadManifest(), loadSignalsIndex()]);
+        const m = await loadManifest();
         setManifest(m);
-        setSignals(s);
         setModelName(Object.keys(m.models)[0]);
       } catch (e) {
         setError(String(e));
@@ -39,7 +38,9 @@ export default function App() {
     })();
   }, []);
 
-  // load model bundle on model change
+  // load model bundle on model change. Subjects are PER-MODEL (each model is
+  // showcased on its own training domain), so the signals index is derived from
+  // the loaded bundle rather than a shared file.
   useEffect(() => {
     if (!modelName) return;
     let alive = true;
@@ -48,7 +49,13 @@ export default function App() {
       .then((d) => {
         if (!alive) return;
         setData(d);
+        setSignals({
+          subjects: d.subjectsMeta.map((s) => ({
+            id: s.id, n_epochs: s.n_epochs, labels: s.labels, order: s.idx,
+          })),
+        });
         setLoading(false);
+        setSubjectOrder(null);
         setSelection({ type: null });
       })
       .catch((e) => alive && setError(String(e)));

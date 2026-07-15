@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { STAGES, STAGE_COLOR, STAGE_LABEL, CLAIMS } from "../theme.js";
-import { fetchEpochRaw, fetchEpochIG, fetchPlausibility } from "../data.js";
-import { spectrogram, STFT_SHAPE } from "../stft.js";
+import { fetchEpochSpec, fetchEpochIG, fetchPlausibility } from "../data.js";
+import { STFT_SHAPE } from "../stft.js";
 import { Waveform, Spectrogram, ProbBars, DivergingBars, ChannelBars, EnvelopePlot } from "./plots.jsx";
 
 const BAND_GREEK = {
@@ -178,27 +178,24 @@ export function PrototypeCard({ card, compact }) {
 }
 
 function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
-  const [raw, setRaw] = useState(null);
   const [specs, setSpecs] = useState(null);
   const [ig, setIg] = useState(null);
   const [plaus, setPlaus] = useState(null);
   const [err, setErr] = useState(null);
-  const C = manifest.channels.length, S = manifest.raw.n_samples;
+  const C = manifest.channels.length;
 
   useEffect(() => {
-    let alive = true; setRaw(null); setSpecs(null); setIg(null); setErr(null);
-    fetchEpochRaw(epochRec.subjectId, epochRec.epochIdx, C, S)
-      .then((chs) => {
-        if (!alive) return;
-        setRaw(chs);
-        setSpecs(chs.map((c) => spectrogram(c)));
-      })
+    let alive = true; setSpecs(null); setIg(null); setErr(null);
+    // ship the precomputed log-power spectrogram (derived, phase-less); the raw
+    // source waveform is intentionally never shipped.
+    fetchEpochSpec(data.model, epochRec.subjectId, epochRec.epochIdx, C, STFT_SHAPE.T, STFT_SHAPE.F)
+      .then((s) => alive && setSpecs(s))
       .catch((e) => alive && setErr(String(e)));
     fetchEpochIG(data.model, epochRec.subjectId, epochRec.epochIdx)
       .then((g) => alive && setIg(normRelevance(g)))
       .catch(() => {});
     return () => (alive = false);
-  }, [data.model, epochRec.subjectId, epochRec.epochIdx, C, S]);
+  }, [data.model, epochRec.subjectId, epochRec.epochIdx, C]);
 
   // per-recording plausibility audit (cached); index by within-subject epoch
   useEffect(() => {
@@ -242,17 +239,11 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
       </div>
 
       <div className="block">
-        <h4>Input signal · EEG / EOG / EMG</h4>
-        {err && <div className="faint">signal unavailable — {err}</div>}
-        {!raw && !err && <div className="loader">loading 30 s epoch…</div>}
-        {raw && <Waveform channels={raw} />}
-      </div>
-
-      <div className="block">
         <h4>Spectrogram — this epoch vs prototype P{epochRec.proto}</h4>
-        <div className="chan"><h5>input epoch ({trueStage || "unscored"})</h5>
+        {err && <div className="faint">spectrogram unavailable — {err}</div>}
+        <div className="chan"><h5>input epoch ({trueStage || "unscored"}) · EEG / EOG / EMG</h5>
           {specs && <Spectrogram specs={specs} T={STFT_SHAPE.T} F={STFT_SHAPE.F} />}
-          {!specs && !err && <div className="loader">computing STFT…</div>}</div>
+          {!specs && !err && <div className="loader">loading spectrogram…</div>}</div>
         {matched?.reconSpecs && (
           <div className="chan" style={{ marginTop: 8 }}>
             <h5>matched prototype P{epochRec.proto} · {matched.dominant_stage} (reconstruction)</h5>
