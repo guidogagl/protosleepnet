@@ -61,6 +61,7 @@ def score_subjects(bundle: Path):
 
         present = sorted({int(c) for c in labels[scored]})
         counts = {STAGE_NAMES[c]: int((labels[scored] == c).sum()) for c in range(5)}
+        fracs = {k: v / n_scored for k, v in counts.items()}
         transitions = int((np.diff(labels[scored]) != 0).sum())
         rows.append({
             "id": sid,
@@ -71,21 +72,35 @@ def score_subjects(bundle: Path):
             "acc_st": round(accs["st"], 4),
             "min_acc": round(min(accs.values()), 4),
             "stages_present": len(present),
-            "n1_frac": round(counts["N1"] / n_scored, 4),
+            "wake_frac": round(fracs["W"], 4),
+            "n1_frac": round(fracs["N1"], 4),
+            "n2_frac": round(fracs["N2"], 4),
+            "n3_frac": round(fracs["N3"], 4),
+            "rem_frac": round(fracs["REM"], 4),
             "transition_rate": round(transitions / max(n_scored - 1, 1), 4),
             "stage_counts": counts,
         })
     return rows
 
 
-def select(rows, n=4, min_epochs=200, max_unscored=0.35, max_n1=0.25):
-    """Cleanliness gate, then rank the survivors by ``min_acc`` (desc)."""
+def select(rows, n=4, min_epochs=200, max_unscored=0.35, max_n1=0.25,
+           max_wake=0.55, min_n2=0.15, min_n3=0.03, min_rem=0.06):
+    """Cleanliness + real-architecture gate, then rank survivors by ``min_acc``.
+
+    Beyond "all 5 stages present" we require a genuine night's sleep — wake not
+    dominant, and enough N2/N3/REM that the featured recording actually exercises
+    the deep-sleep and REM prototypes the demo is meant to explain.
+    """
     clean = [
         r for r in rows
         if r["stages_present"] == 5
         and r["n_scored"] >= min_epochs
         and r["unscored_frac"] <= max_unscored
         and r["n1_frac"] <= max_n1
+        and r["wake_frac"] <= max_wake
+        and r["n2_frac"] >= min_n2
+        and r["n3_frac"] >= min_n3
+        and r["rem_frac"] >= min_rem
     ]
     clean.sort(key=lambda r: (r["min_acc"], min(r["acc_seq"], r["acc_st"])), reverse=True)
     return clean[:n], clean
@@ -103,12 +118,14 @@ def main():
     chosen, clean = select(rows, n=args.num)
 
     print(f"\n{len(rows)} recordings scored; {len(clean)} pass the cleanliness gate.\n")
-    hdr = f"{'id':<12}{'min_acc':>8}{'acc_seq':>8}{'acc_st':>8}{'stages':>7}{'n1%':>7}{'unscored%':>10}{'epochs':>7}"
+    hdr = (f"{'id':<12}{'min_acc':>8}{'acc_seq':>8}{'acc_st':>8}"
+           f"{'W%':>6}{'N2%':>6}{'N3%':>6}{'REM%':>6}{'epochs':>7}")
     print(hdr)
     print("-" * len(hdr))
     for r in chosen:
         print(f"{r['id']:<12}{r['min_acc']:>8.3f}{r['acc_seq']:>8.3f}{r['acc_st']:>8.3f}"
-              f"{r['stages_present']:>7}{r['n1_frac']*100:>6.1f}%{r['unscored_frac']*100:>9.1f}%{r['n_epochs']:>7}")
+              f"{r['wake_frac']*100:>5.0f}%{r['n2_frac']*100:>5.0f}%{r['n3_frac']*100:>5.0f}%"
+              f"{r['rem_frac']*100:>5.0f}%{r['n_epochs']:>7}")
 
     print("\nCHOSEN_IDS=" + ",".join(r["id"] for r in chosen))
     for r in chosen:
