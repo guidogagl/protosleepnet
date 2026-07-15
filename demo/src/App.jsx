@@ -3,7 +3,9 @@ import { loadManifest, loadModel, loadSignalsIndex } from "./data.js";
 import Scatter from "./components/Scatter.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import Hypnogram from "./components/Hypnogram.jsx";
+import PrototypeGram from "./components/PrototypeGram.jsx";
 import RightPanel from "./components/RightPanel.jsx";
+import StoryMode from "./components/StoryMode.jsx";
 
 const MODEL_LABEL = {
   seq: { name: "ProtoSleepNet", sub: "SeqSleepNet backbone" },
@@ -21,6 +23,7 @@ export default function App() {
   const [colorBy, setColorBy] = useState("stage"); // stage | proto | error
   const [subjectOrder, setSubjectOrder] = useState(null); // signals order idx or null
   const [selection, setSelection] = useState({ type: null }); // {type:'epoch',gi} | {type:'proto',k}
+  const [story, setStory] = useState(false); // guided-tour overlay
 
   // bootstrap
   useEffect(() => {
@@ -140,9 +143,9 @@ export default function App() {
           })}
         </div>
         <span className="spacer" />
-        <span className="badge">
-          dataset <b>SleepEDF</b>
-        </span>
+        <button className={"tour-btn" + (story ? " on" : "")} onClick={() => setStory((v) => !v)}>
+          {story ? "✕ End tour" : "▶ Guided tour"}
+        </button>
         {data && (
           <span className="badge tnum">
             <b>{data.n.toLocaleString()}</b> epochs · <b>{data.subjectsMeta.length}</b> nights
@@ -189,6 +192,14 @@ export default function App() {
           epochRec={epochRec}
           onSelectEpoch={selectEpochBySubject}
         />
+        <PrototypeGram
+          data={data}
+          subjectRanges={subjectRanges}
+          subjectOrder={subjectOrder}
+          epochRec={epochRec}
+          onSelectEpoch={selectEpochBySubject}
+          onSelectProto={selectProto}
+        />
       </div>
 
       <RightPanel
@@ -199,6 +210,23 @@ export default function App() {
         epochRec={epochRec}
         onSelectProto={selectProto}
       />
+
+      {story && data && (
+        <StoryMode
+          manifest={manifest}
+          data={data}
+          subjectRanges={subjectRanges}
+          signals={signals}
+          actions={{
+            setColorBy,
+            selectProto,
+            selectSubject: (o) => { setSubjectOrder(o); setSelection({ type: null }); },
+            selectEpoch: (o, ei) => selectEpochBySubject(o, ei),
+            clear: () => setSelection({ type: null }),
+          }}
+          onClose={() => setStory(false)}
+        />
+      )}
     </div>
   );
 }

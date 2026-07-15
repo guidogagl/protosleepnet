@@ -22,7 +22,10 @@ export async function loadManifest() {
 export async function loadSignalsIndex() {
   const subjects = await fetchJSON("signals/subjects.json");
   const byId = {};
-  subjects.forEach((s, i) => (byId[s.id] = { ...s, order: i }));
+  subjects.forEach((s, i) => {
+    s.order = i; // signals order == model subject idx == subj.u16 value
+    byId[s.id] = s;
+  });
   return { subjects, byId };
 }
 
@@ -172,6 +175,18 @@ export async function fetchEpochIG(model, subjectId, epochIdx, C = 3, T = 29, F 
     for (let i = 0; i < TF; i++) ch[i] = halfToFloat(u16[c * TF + i]);
     return ch;
   });
+}
+
+// Per-recording explanation-plausibility audit (one record per epoch, in epoch
+// order). Small JSON, fetched lazily on subject select and cached.
+const _plausCache = {};
+export async function fetchPlausibility(model, subjectId) {
+  const key = `${model}/${subjectId}`;
+  if (_plausCache[key]) return _plausCache[key];
+  const p = fetchJSON(`${model}/plausibility/${encodeURIComponent(subjectId)}.json`)
+    .catch(() => null);
+  _plausCache[key] = p;
+  return p;
 }
 
 export { DATA_URL };

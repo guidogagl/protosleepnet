@@ -63,13 +63,20 @@ def _half_to_f32(path, per_epoch_floats):
 
 
 def _channel_score(stage, eeg, eog, emg):
-    """Stage-appropriate channel expectation -> (ok, score in [0,1])."""
+    """Stage-appropriate channel expectation -> (ok, score in [0,1]).
+
+    REM is eye-movement (EOG) driven; Wake shows EMG tone / eye activity. For
+    NREM the discriminative evidence is EEG spectral — but SleepEDF's fronto-polar
+    EOG derivation carries EEG delta, so a high EOG share is physiological, not an
+    error. We therefore only require the NREM explanation to be brain-driven, i.e.
+    NOT dominated by the EMG (muscle) channel.
+    """
     if stage == "REM":
         return eog >= 0.25, min(1.0, eog / 0.30)
     if stage == "W":
         return (emg >= 0.20 or eog >= 0.25), min(1.0, max(emg, eog) / 0.25)
-    # N1 / N2 / N3 -> EEG must dominate
-    return eeg >= max(eog, emg), eeg
+    # N1 / N2 / N3 -> brain-driven, muscle-quiet
+    return emg <= 0.45, max(0.0, 1.0 - emg / 0.45)
 
 
 def eval_epoch(attr, stage):

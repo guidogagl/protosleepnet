@@ -214,3 +214,74 @@ canvas.plot { width: 100%; display: block; border-radius: var(--radius-sm); back
 
 .loader { color: var(--ink-faint); font-size: 12px; padding: 8px 0; }
 .appmsg { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-dim); }
+
+/* ── guided tour button + panel ── */
+.tour-btn {
+  appearance: none; border: 1px solid var(--accent); background: transparent; color: var(--accent);
+  border-radius: 999px; padding: 6px 13px; font: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.tour-btn:hover { background: rgba(90,200,250,0.12); }
+.tour-btn.on { background: var(--accent); color: #05121b; }
+
+.story {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  width: min(680px, calc(100vw - 40px)); z-index: 50;
+  background: linear-gradient(180deg, var(--elev), var(--panel-2));
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 18px 14px;
+}
+.story-top { display: flex; align-items: baseline; gap: 10px; }
+.story-tag {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  color: #05121b; background: var(--accent); padding: 2px 8px; border-radius: 999px;
+}
+.story-title { font-size: 15px; font-weight: 650; color: var(--ink); }
+.story-x { margin-left: auto; appearance: none; border: 0; background: transparent; color: var(--ink-faint); font-size: 15px; cursor: pointer; }
+.story-x:hover { color: var(--ink); }
+.story-body { font-size: 13px; line-height: 1.62; color: var(--ink-dim); margin: 9px 0 12px; }
+.story-body b { color: var(--ink); font-weight: 600; }
+.story-nav { display: flex; align-items: center; }
+.story-dots { display: flex; gap: 7px; }
+.story-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); cursor: pointer; transition: background 0.15s; }
+.story-dots .dot.on { background: var(--accent); }
+.story-btns { margin-left: auto; display: flex; gap: 8px; }
+.story-btns button {
+  appearance: none; border: 1px solid var(--line-strong); background: var(--elev); color: var(--ink-dim);
+  border-radius: var(--radius-sm); padding: 7px 14px; font: inherit; font-size: 12.5px; cursor: pointer;
+}
+.story-btns button:hover:not(:disabled) { color: var(--ink); border-color: var(--accent); }
+.story-btns button:disabled { opacity: 0.4; cursor: default; }
+.story-btns .primary { background: var(--accent); color: #05121b; border-color: var(--accent); font-weight: 600; }
+
+/* ── claim tag caption ── */
+.claimtag { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 8px; }
+.ct-tag {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--accent-2); border: 1px solid var(--accent-2); border-radius: 999px; padding: 1px 7px;
+}
+.ct-title { font-size: 11.5px; color: var(--ink-dim); font-style: italic; }
+
+/* ── per-epoch plausibility badge ── */
+.plausible {
+  display: flex; align-items: flex-start; gap: 8px; margin: 8px 0 2px; padding: 8px 10px;
+  border-radius: var(--radius-sm); font-size: 11.5px; line-height: 1.5; border: 1px solid var(--line);
+}
+.plausible.ok { background: rgba(70,211,154,0.09); border-color: rgba(70,211,154,0.4); }
+.plausible.off { background: rgba(232,102,79,0.09); border-color: rgba(232,102,79,0.4); }
+.plausible .pl-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; margin-top: 3px; }
+.plausible.ok .pl-dot { background: var(--good); }
+.plausible.off .pl-dot { background: var(--bad); }
+.plausible .pl-txt { color: var(--ink-dim); }
+.plausible .pl-txt b { color: var(--ink); }
+
+/* ── prototype-gram strip ── */
+.protogram { height: 74px; border-top: 1px solid var(--line); background: var(--panel); padding: 10px 16px 8px; display: flex; flex-direction: column; }
+.protogram .hd { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
+.protogram .hd h2 { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: var(--ink-faint); margin: 0; }
+.protogram .hd .who { font-size: 11.5px; }
+.protogram canvas { flex: 1; width: 100%; cursor: crosshair; }
+.pg-lg { margin-left: auto; display: flex; flex-wrap: wrap; gap: 5px; }
+.pgchip { appearance: none; border: 1px solid var(--line); background: var(--elev); color: var(--ink-dim); border-radius: 999px; padding: 1px 7px 1px 4px; font: inherit; font-size: 10.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.pgchip:hover { color: var(--ink); border-color: var(--line-strong); }
+.pgchip i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }

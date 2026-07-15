@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { STAGES, STAGE_COLOR, STAGE_LABEL } from "../theme.js";
-import { fetchEpochRaw, fetchEpochIG } from "../data.js";
+import { STAGES, STAGE_COLOR, STAGE_LABEL, CLAIMS } from "../theme.js";
+import { fetchEpochRaw, fetchEpochIG, fetchPlausibility } from "../data.js";
 import { spectrogram, STFT_SHAPE } from "../stft.js";
 import { Waveform, Spectrogram, ProbBars, DivergingBars, ChannelBars, EnvelopePlot } from "./plots.jsx";
 
@@ -8,6 +8,43 @@ const BAND_GREEK = {
   delta: "δ", theta: "θ", alpha: "α", sigma_low: "σ⁻", sigma_high: "σ⁺",
   beta_low: "β⁻", beta_high: "β⁺", gamma: "γ", mains: "mains",
 };
+
+// small caption naming the paper claim a panel demonstrates
+function ClaimTag({ id }) {
+  const c = CLAIMS[id];
+  if (!c) return null;
+  return (
+    <div className="claimtag" title={c.short}>
+      <span className="ct-tag">{c.tag}</span>
+      <span className="ct-title">{c.title}</span>
+    </div>
+  );
+}
+
+// honest per-epoch verdict: did IG land on the stage's expected band + channel?
+function PlausibilityBadge({ rec, proto }) {
+  if (!rec) return null;
+  const ok = rec.ok === 1;
+  const band = BAND_GREEK[rec.tb] || rec.tb;
+  const exp = (rec.ex || []).map((b) => BAND_GREEK[b] || b).join(", ");
+  const topCh = rec.ch
+    ? Object.entries(rec.ch).sort((a, b) => b[1] - a[1])[0][0]
+    : null;
+  let msg;
+  if (ok) {
+    msg = <>IG concentrates on <b>{band}</b> — consistent with {rec.st} physiology{exp && <> (expected {exp})</>}.</>;
+  } else if (rec.bok && !rec.cok) {
+    msg = <>IG lands on the right band (<b>{band}</b> for {rec.st}) but is weighted to the <b>{topCh}</b> channel — an honest caveat, shown not hidden.</>;
+  } else {
+    msg = <>IG peaks on <b>{band}</b>, outside {rec.st}'s expected bands{exp && <> ({exp})</>} — an honest miss, shown not hidden.</>;
+  }
+  return (
+    <div className={"plausible " + (ok ? "ok" : "off")}>
+      <span className="pl-dot" />
+      <span className="pl-txt">{msg}</span>
+    </div>
+  );
+}
 
 function StagePill({ stage }) {
   return <span className="pill" style={{ background: STAGE_COLOR[stage] || "#888" }}>{stage}</span>;
@@ -54,10 +91,12 @@ export function PrototypeCard({ card, compact }) {
         {card.label_purity != null && <> · {(card.label_purity * 100).toFixed(0)}% pure</>}
       </div>
 
+      {!compact && <ClaimTag id="C" />}
+
       {!compact && (
         <>
           <div className="kv"><span className="k">Monosemanticity</span><span className="v tnum">{card.monosemanticity?.toFixed(2) ?? "—"}</span></div>
-          <div className="kv"><span className="k">SleepEDF epochs</span><span className="v tnum">{(card.sleepedf_cluster_size ?? 0).toLocaleString()}</span></div>
+          <div className="kv"><span className="k">Cohort epochs</span><span className="v tnum">{(card.cohort_cluster_size ?? 0).toLocaleString()}</span></div>
           <div className="kv"><span className="k">Peak EEG band</span><span className="v">{BAND_GREEK[card.peak_band_eeg] || card.peak_band_eeg || "—"}</span></div>
           {card.cross?.plausibility?.mean != null &&
             <div className="kv"><span className="k">Plausibility</span><span className="v tnum">{card.cross.plausibility.mean.toFixed(2)}</span></div>}
@@ -67,8 +106,8 @@ export function PrototypeCard({ card, compact }) {
       )}
 
       <div className="block">
-        <h4>SleepEDF label mix</h4>
-        <LabelDistribution dist={card.sleepedf_label_distribution} />
+        <h4>Cohort label mix</h4>
+        <LabelDistribution dist={card.cohort_label_distribution} />
       </div>
 
       {!compact && card.reconSpecs && (
@@ -110,6 +149,7 @@ export function PrototypeCard({ card, compact }) {
 
       <div className="block">
         <h4>Discovered rule</h4>
+        {!compact && <ClaimTag id="D" />}
         <div className="rule">
           {["s1", "s2", "s3", "s4"].map((s) => card.rule?.[s] && (
             <div className="s" key={s}>{card.rule[s]}</div>
@@ -141,6 +181,7 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
   const [raw, setRaw] = useState(null);
   const [specs, setSpecs] = useState(null);
   const [ig, setIg] = useState(null);
+  const [plaus, setPlaus] = useState(null);
   const [err, setErr] = useState(null);
   const C = manifest.channels.length, S = manifest.raw.n_samples;
 
@@ -158,6 +199,15 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
       .catch(() => {});
     return () => (alive = false);
   }, [data.model, epochRec.subjectId, epochRec.epochIdx, C, S]);
+
+  // per-recording plausibility audit (cached); index by within-subject epoch
+  useEffect(() => {
+    let alive = true; setPlaus(null);
+    fetchPlausibility(data.model, epochRec.subjectId)
+      .then((arr) => alive && setPlaus(arr ? arr[epochRec.epochIdx] : null))
+      .catch(() => {});
+    return () => (alive = false);
+  }, [data.model, epochRec.subjectId, epochRec.epochIdx]);
 
   const matched = data.prototypes[epochRec.proto];
   const trueStage = epochRec.label === 255 ? null : STAGES[epochRec.label];
@@ -217,8 +267,10 @@ function EpochDetail({ manifest, data, epochRec, onSelectProto }) {
 
       <div className="block">
         <h4>Why this epoch → P{epochRec.proto} · IG attribution</h4>
+        <ClaimTag id="B" />
         {ig ? <Spectrogram specs={ig} T={STFT_SHAPE.T} F={STFT_SHAPE.F} cmap="inferno" />
           : <div className="loader">loading attribution…</div>}
+        <PlausibilityBadge rec={plaus} proto={epochRec.proto} />
         <p className="faint" style={{ fontSize: 11, margin: "5px 0 0" }}>
           Integrated Gradients on <b>−‖encode(x)−p<sub>{epochRec.proto}</sub>‖²</b> for
           <b> this epoch</b>: the bright time–frequency regions are what pull it toward P{epochRec.proto}.
@@ -241,11 +293,13 @@ function Overview({ manifest, data, backbone }) {
     <div className="rp">
       <div className="block" style={{ marginTop: 0 }}>
         <h4>The atlas</h4>
+        <ClaimTag id="A" />
         <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.6 }}>
-          Each point is one 30-second epoch of SleepEDF, placed by a PaCMAP of ProtoSleepNet's
+          Each point is one 30-second epoch, placed by a PaCMAP of ProtoSleepNet's
           128-dimensional embedding space. The <b style={{ color: "#fff" }}>◆ diamonds</b> are the
-          model's <b style={{ color: "#fff" }}>12 learned prototypes</b>. Click any point to see its
-          true stage, the model's prediction, and why it matches its nearest prototype — or click a
+          model's <b style={{ color: "#fff" }}>12 learned prototypes</b>. Every stage decision is made
+          by snapping an epoch to its nearest prototype — so this map <i>is</i> the model's reasoning.
+          Click any point to see its true stage, the prediction, and why it matches — or click a
           prototype to read the physiological rule it encodes.
         </p>
       </div>

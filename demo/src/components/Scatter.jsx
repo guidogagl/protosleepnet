@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import createScatterplot from "regl-scatterplot";
 import { scaleLinear } from "d3-scale";
-import { STAGES, STAGE_HEX, MASK_COLOR, STAGE_COLOR, hexToRGBA } from "../theme.js";
+import { STAGES, STAGE_HEX, MASK_COLOR, STAGE_COLOR, hexToRGBA, PROTO_HUES } from "../theme.js";
 
-// 12 distinct hues for prototype-colored mode
-const PROTO_HUES = Array.from({ length: 12 }, (_, i) => `hsl(${(i * 360) / 12 + 15}, 62%, 62%)`);
 const GOOD = "#46d39a", BAD = "#e8664f", NEUTRAL = "#39404E";
 
 function pointSizeFor(n) {
