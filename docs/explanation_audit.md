@@ -9,23 +9,24 @@ This is an honest sanity check of the *local* explanations, not a cherry-pick.
 
 | recording | epochs | plausible | band ok | channel ok | N3 pos | REM pos |
 |---|---|---|---|---|---|---|
-| Recording A | 1910 | 55% | 56% | 84% | 0.20 | 0.23 |
-| Recording B | 1583 | 66% | 69% | 79% | 0.52 | - |
-| Recording C | 843 | 81% | 82% | 95% | 0.45 | 0.69 |
-| Recording D | 1134 | 75% | 76% | 89% | 0.54 | 0.63 |
-- Recording A: N3 precedes REM (expected) — N3 mean position 0.20, REM 0.23.
-- Recording C: N3 precedes REM (expected) — N3 mean position 0.45, REM 0.69.
-- Recording D: N3 precedes REM (expected) — N3 mean position 0.54, REM 0.63.
+| Recording A | 963 | 68% | 81% | 78% | 0.36 | 0.83 |
+| Recording B | 982 | 66% | 83% | 73% | 0.32 | 0.62 |
+| Recording C | 1011 | 65% | 73% | 74% | 0.30 | 0.58 |
+| Recording D | 940 | 68% | 74% | 81% | 0.27 | 0.65 |
+- Recording A: N3 precedes REM (expected) — N3 mean position 0.36, REM 0.83.
+- Recording B: N3 precedes REM (expected) — N3 mean position 0.32, REM 0.62.
+- Recording C: N3 precedes REM (expected) — N3 mean position 0.30, REM 0.58.
+- Recording D: N3 precedes REM (expected) — N3 mean position 0.27, REM 0.65.
 
 ## protosleeptransformer-gagliardi (st)
 
 | recording | epochs | plausible | band ok | channel ok | N3 pos | REM pos |
 |---|---|---|---|---|---|---|
-| Recording A | 1910 | 36% | 36% | 95% | 0.20 | 0.33 |
-| Recording B | 1583 | 36% | 36% | 90% | 0.52 | 0.73 |
-| Recording C | 843 | 69% | 69% | 93% | 0.42 | 0.60 |
-| Recording D | 1134 | 65% | 65% | 96% | 0.57 | 0.57 |
-- Recording A: N3 precedes REM (expected) — N3 mean position 0.20, REM 0.33.
-- Recording B: N3 precedes REM (expected) — N3 mean position 0.52, REM 0.73.
-- Recording C: N3 precedes REM (expected) — N3 mean position 0.42, REM 0.60.
-- Recording D: REM precedes N3 (atypical) — N3 mean position 0.57, REM 0.57.
+| Recording A | 848 | 77% | 77% | 100% | 0.28 | 0.59 |
+| Recording B | 990 | 63% | 63% | 100% | 0.44 | 0.59 |
+| Recording C | 1053 | 73% | 73% | 99% | 0.36 | 0.52 |
+| Recording D | 963 | 70% | 70% | 100% | 0.27 | 0.57 |
+- Recording A: N3 precedes REM (expected) — N3 mean position 0.28, REM 0.59.
+- Recording B: N3 precedes REM (expected) — N3 mean position 0.44, REM 0.59.
+- Recording C: N3 precedes REM (expected) — N3 mean position 0.36, REM 0.52.
+- Recording D: N3 precedes REM (expected) — N3 mean position 0.27, REM 0.57.
