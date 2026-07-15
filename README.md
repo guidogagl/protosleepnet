@@ -16,7 +16,7 @@ meaningful sub-stage pattern discovery"** (ProtoSleepNet), in press at
 
 > ▶ **Try it live — [protosleepnet-demo.pages.dev](https://protosleepnet-demo.pages.dev)** — an interactive atlas of the prototype space: click any epoch to see the exact evidence for its stage.
 
-[![ProtoSleepNet interactive explainability demo](https://raw.githubusercontent.com/guidogagl/protosleepnet/main/docs/_static/demo.gif)](https://protosleepnet-demo.pages.dev)
+[![ProtoSleepNet interactive explainability demo](docs/_static/demo.gif)](https://protosleepnet-demo.pages.dev)
 
 ProtoSleepNet wraps a sleep-staging backbone (SeqSleepNet or SleepTransformer)
 with a **Prototype Sub-Stage (PSS)** module: per-channel encoding, modality
@@ -28,7 +28,7 @@ exploratory clinical probing (Alzheimer's, Parkinson's).
 
 **📖 Documentation: [guidogagl.github.io/protosleepnet](https://guidogagl.github.io/protosleepnet)** — method overview, a guide to *how to interpret the model*, the embedded live demo, and the full paper-reproduction recipe.
 
-![ProtoSleepNet architecture](https://raw.githubusercontent.com/guidogagl/protosleepnet/main/docs/figures/schema.png)
+![ProtoSleepNet architecture](docs/figures/schema.png)
 
 > **Built on [physioex](https://github.com/guidogagl/physioex) v2.0.0.**
 > <a href="https://github.com/guidogagl/physioex"><img src="https://raw.githubusercontent.com/guidogagl/physioex/refs/heads/main/docs/assets/images/logo.svg" width="180px" alt="physioex"></a>

@@ -103,6 +103,9 @@ intersphinx_mapping = {
 # -- Mermaid -----------------------------------------------------------------
 
 mermaid_version = "11.4.0"
+# "neutral" reads acceptably on both the light default and the dark theme,
+# instead of the default light-lavender palette islanding on a dark page.
+mermaid_init_js = 'mermaid.initialize({startOnLoad:true, theme:"neutral"});'
 
 # -- HTML output -------------------------------------------------------------
 
@@ -137,4 +140,18 @@ html_context = {
     "github_user": "guidogagl",
     "github_repo": "protosleepnet",
     "github_version": "main",
+}
+
+# The Guide + landing pages are flat top-level toctree entries with no sub-tree,
+# so the left "Section Navigation" sidebar renders empty — drop it there and let
+# the content span full width. The auto-generated ``api/**`` pages keep their
+# sidebar (they carry a real module tree).
+html_sidebars = {
+    "index": [],
+    "pages/overview": [],
+    "pages/install": [],
+    "pages/interpret": [],
+    "pages/demo": [],
+    "pages/reproduce": [],
+    "pages/citation": [],
 }

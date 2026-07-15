@@ -50,5 +50,21 @@ html[data-theme="dark"] {
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
 }
 
-/* Tabular numerals for the reproduction / audit tables */
-table.docutils td, table.docutils th { font-variant-numeric: tabular-nums; }
+/* Tabular numerals across content tables (reproduction / audit) */
+.bd-content table td, .bd-content table th { font-variant-numeric: tabular-nums; }
+
+/* Long CLI commands in tables (the reproduction guide) must WRAP, not clip off
+   the edge. docutils wraps inline code in <span class="pre"> which carries
+   white-space:pre — override it (and the <code>) inside table cells. */
+.bd-content table td code,
+.bd-content table th code,
+.bd-content table td code .pre,
+.bd-content table th code .pre {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* belt-and-braces: any over-wide table scrolls instead of clipping */
+.bd-content .table-responsive,
+.bd-content table.docutils { max-width: 100%; }
