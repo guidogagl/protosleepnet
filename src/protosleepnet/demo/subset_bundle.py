@@ -123,7 +123,12 @@ def main():
                 p["cohort_label_distribution"] = p.pop("sleepedf_label_distribution")
             if "sleepedf_cluster_size" in p:
                 p["cohort_cluster_size"] = p.pop("sleepedf_cluster_size")
-        (odir / "prototypes.json").write_text(json.dumps(protos))
+            # nested cross-dataset metrics carry dataset names in their keys
+            if isinstance(p.get("cross"), dict):
+                p["cross"] = {k.replace("sleepedf", "cohort"): v for k, v in p["cross"].items()}
+        blob = json.dumps(protos)
+        assert "sleepedf" not in blob.lower(), f"{hf}: prototypes still leak dataset name"
+        (odir / "prototypes.json").write_text(blob)
 
         for f in PROTO_FILES:
             src = mdir / f

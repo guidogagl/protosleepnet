@@ -34,11 +34,13 @@ MODEL_HF = {"seq": "protosleepnet-gagliardi", "st": "protosleeptransformer-gagli
 CHANNELS = ["EEG", "EOG", "EMG"]
 FS, NFFT, N_FREQ, N_TIME = 100.0, 256, 129, 29
 
-# AASM bands kept over 0..129 rfft bins (mirror sleep_bands.SLEEP_BANDS)
+# AASM bands kept over 0..129 rfft bins (mirror sleep_bands.SLEEP_BANDS).
+# The 50 Hz "mains" powerline band is intentionally excluded — it is a recording
+# artifact, not physiology, and would otherwise mask the informative bands.
 _BANDS = [("delta", 0.5, 4.0), ("theta", 4.0, 8.0), ("alpha", 8.0, 11.0),
           ("sigma_low", 11.0, 13.0), ("sigma_high", 13.0, 16.0),
           ("beta_low", 16.0, 20.0), ("beta_high", 20.0, 30.0),
-          ("gamma", 30.0, 45.0), ("mains", 48.0, 52.0)]
+          ("gamma", 30.0, 45.0)]
 _RES = FS / NFFT
 BANDS = [(n, max(0, round(lo / _RES)), min(N_FREQ, round(hi / _RES))) for n, lo, hi in _BANDS]
 BAND_NAMES = [b[0] for b in BANDS]
@@ -75,7 +77,9 @@ def eval_epoch(attr, stage):
     ch = attr.sum(axis=(1, 2))                       # EEG, EOG, EMG totals
     ch_frac = ch / (ch.sum() + 1e-9)
     eeg_tf = attr[0]                                 # (T, F)
-    band_rel = np.array([eeg_tf[:, a:b].sum() for _, a, b in BANDS])
+    # relevance DENSITY (mean per bin) so wide bands (gamma) aren't favoured
+    # over narrow ones (delta, sigma) purely by bin count.
+    band_rel = np.array([eeg_tf[:, a:b].mean() for _, a, b in BANDS])
     band_frac = band_rel / (band_rel.sum() + 1e-9)
     top = int(band_frac.argmax())
     expected = EXPECTED_TOP_BANDS.get(stage, set())
