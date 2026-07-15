@@ -102,11 +102,17 @@ def main():
 
         arrs = {name: _read(mdir / name, dt, nc) for name, (dt, nc) in ARRAYS.items()}
         subj = arrs["subj.u16"].astype(np.int64)
-        keep = np.isin(subj, chosen_pos)
-        print(f"[{hf}] keep {int(keep.sum())}/{keep.size} epochs")
+        keep_idx = np.where(np.isin(subj, chosen_pos))[0]
+        # The full arrays are grouped by subject in FULL canonical order; reorder
+        # the kept rows into the chosen (--ids) order so they line up with the
+        # subjects.json we emit and the app's contiguous per-subject ranges. A
+        # stable sort on the remapped index preserves within-subject epoch order.
+        new_subj_all = remap[subj[keep_idx]]
+        keep_idx = keep_idx[np.argsort(new_subj_all, kind="stable")]
+        print(f"[{hf}] keep {keep_idx.size}/{subj.size} epochs")
 
-        new_subj = remap[subj[keep]].astype(np.uint16)
-        sub = {name: a[keep] for name, a in arrs.items()}
+        new_subj = remap[subj[keep_idx]].astype(np.uint16)
+        sub = {name: a[keep_idx] for name, a in arrs.items()}
         sub["subj.u16"] = new_subj
 
         sub["xy.f32"].astype("<f4").tofile(str(odir / "xy.f32"))

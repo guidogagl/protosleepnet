@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CLAIMS, STAGES } from "../theme.js";
 
-// find the signals order-index of a featured recording by its (anon) label
-function orderOf(signals, id) {
-  return signals.subjects.find((s) => s.id === id)?.order ?? signals.subjects[0]?.order ?? null;
+// find a featured recording's order-index by its (anon) label, via subjectRanges
+// (the same keyed map the app uses); falls back to the first recording
+function orderOf(subjectRanges, id) {
+  const k = Object.keys(subjectRanges || {}).find((k) => subjectRanges[k].id === id);
+  return k != null ? Number(k) : 0;
 }
 
 // first within-subject epoch of `stage` that the model also predicts correctly
@@ -47,7 +49,7 @@ const STEPS = [
   {
     ...CLAIMS.B, color: "stage",
     run: (ctx) => {
-      const order = orderOf(ctx.signals, "Recording C");
+      const order = orderOf(ctx.subjectRanges, "Recording C");
       ctx.actions.selectSubject(order);
       const range = ctx.subjectRanges?.[order];
       ctx.actions.selectEpoch(order, findEpoch(ctx.data, range, 2)); // an N2 epoch
