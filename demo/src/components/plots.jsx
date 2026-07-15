@@ -73,17 +73,23 @@ export function Spectrogram({ specs, T, F, chanHeight = 48, maxFreqBin = 103, fs
     const octx = off.getContext("2d");
     const hzOfBin = (b) => (b * fs) / nfft; // bin -> Hz
     ctx.font = "9px -apple-system, sans-serif";
-    // shared dB colour scale across channels so relative power is comparable
-    // (e.g. SleepEDF's 1 Hz EMG reads as low-power, not stretched noise)
-    let lo = Infinity, hi = -Infinity;
-    for (const spec of specs)
-      for (let i = 0; i < spec.length; i++) { if (spec[i] < lo) lo = spec[i]; if (spec[i] > hi) hi = spec[i]; }
-    const rng = hi - lo || 1;
+    // PER-CHANNEL robust contrast (2nd–98th pct over the displayed band): EEG/EOG/EMG
+    // have different units/power, and a shared scale makes the (correlated) channels
+    // look near-identical. Scaling each channel to its own range exposes its structure.
+    const ranges = specs.map((spec) => {
+      const vals = [];
+      for (let t = 0; t < T; t++) for (let f = 0; f < maxFreqBin; f++) vals.push(spec[t * F + f]);
+      vals.sort((a, b) => a - b);
+      const lo = vals[Math.floor(vals.length * 0.02)];
+      const hi = vals[Math.floor(vals.length * 0.98)];
+      return [lo, (hi - lo) || 1];
+    });
     specs.forEach((spec, ci) => {
+      const [clo, cspan] = ranges[ci];
       const img = octx.createImageData(T, maxFreqBin);
       for (let t = 0; t < T; t++) {
         for (let f = 0; f < maxFreqBin; f++) {
-          const v = (spec[t * F + f] - lo) / rng;
+          const v = Math.max(0, Math.min(1, (spec[t * F + f] - clo) / cspan));
           const [r, g, b] = cfn(v);
           const px = ((maxFreqBin - 1 - f) * T + t) * 4; // flip freq (low at bottom)
           img.data[px] = r; img.data[px + 1] = g; img.data[px + 2] = b; img.data[px + 3] = 255;
