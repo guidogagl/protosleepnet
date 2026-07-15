@@ -19,7 +19,7 @@ and open the prototype cards: **<https://protosleepnet-demo.pages.dev>**. The
 {doc}`demo` page embeds it directly.
 :::
 
-[![ProtoSleepNet interactive demo](https://raw.githubusercontent.com/guidogagl/protosleepnet/main/docs/_static/demo.gif)](https://protosleepnet-demo.pages.dev)
+[![ProtoSleepNet interactive demo](../_static/demo.gif)](https://protosleepnet-demo.pages.dev)
 
 ## How the model reasons
 
