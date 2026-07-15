@@ -25,3 +25,7 @@ __pycache__/
 
 # --- cluster-local config (copy from env.sh.example) ---
 examples/slurm/env.sh
+
+# --- docs build + generated autoapi stubs (regenerated on every build) ---
+docs/_build/
+docs/api/

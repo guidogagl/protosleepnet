@@ -27,8 +27,21 @@ dependencies = [
 # (src/protosleepnet/demo). The demo itself is a static app and needs none of this.
 demo = ["umap-learn", "pacmap"]
 
+# Build the documentation site. Import-free: sphinx-autoapi parses the source
+# statically, so this pulls NO torch / physioex — the GitHub-Pages CI stays light.
+docs = [
+    "sphinx==8.1.3",
+    "pydata-sphinx-theme==0.16.1",
+    "myst-parser>=4,<5",
+    "sphinx-autoapi>=3.3,<4",
+    "sphinx-design==0.6.1",
+    "sphinx-copybutton==0.5.2",
+    "sphinxcontrib-mermaid==1.0.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/guidogagl/protosleepnet"
+Documentation = "https://guidogagl.github.io/protosleepnet"
 "Paper" = "https://www.nature.com/npjdigitalmed/"
 "physioex" = "https://github.com/guidogagl/physioex"
 

@@ -1,0 +1,54 @@
+/* ProtoSleepNet docs — palette + the colorblind-safe sleep-stage colors used
+   consistently across the interactive demo (see demo/src/theme.js). */
+
+:root {
+  --pst-accent: #3B82C4;          /* N2 blue — primary accent */
+  --pst-accent-deep: #22346B;     /* N3 navy */
+  --pst-rem: #E8664F;             /* REM vermilion */
+
+  /* sleep-stage swatches (W, N1, N2, N3, REM) */
+  --stage-w: #C9CCD6;
+  --stage-n1: #7FC6F2;
+  --stage-n2: #3B82C4;
+  --stage-n3: #22346B;
+  --stage-rem: #E8664F;
+}
+
+html[data-theme="light"] {
+  --pst-color-primary: var(--pst-accent);
+  --pst-color-link: var(--pst-accent);
+  --pst-color-link-hover: var(--pst-accent-deep);
+}
+html[data-theme="dark"] {
+  --pst-color-primary: var(--stage-n1);
+  --pst-color-link: var(--stage-n1);
+  --pst-color-link-hover: #ffffff;
+}
+
+/* Inline sleep-stage chips: <span class="stage stage-n2">N2</span> */
+.stage {
+  display: inline-block;
+  padding: 0.05em 0.5em;
+  border-radius: 0.5em;
+  font-weight: 600;
+  font-size: 0.85em;
+  color: #fff;
+}
+.stage-w   { background: var(--stage-w); color: #1b2330; }
+.stage-n1  { background: var(--stage-n1); color: #0d2a3f; }
+.stage-n2  { background: var(--stage-n2); }
+.stage-n3  { background: var(--stage-n3); }
+.stage-rem { background: var(--stage-rem); }
+
+/* The embedded live-demo iframe */
+.pst-demo-frame {
+  width: 100%;
+  height: 78vh;
+  min-height: 620px;
+  border: 1px solid var(--pst-color-border, #d0d7de);
+  border-radius: 10px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Tabular numerals for the reproduction / audit tables */
+table.docutils td, table.docutils th { font-variant-numeric: tabular-nums; }

@@ -1,14 +1,22 @@
 # ProtoSleepNet
 
+**Prototype-based, interpretable sleep staging — where reading the prototypes _is_ reading the decision.**
+
 [![Paper](https://img.shields.io/badge/npj%20Digital%20Medicine-in%20press-b31b1b)](https://www.nature.com/npjdigitalmed/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](pyproject.toml)
+[![Docs](https://img.shields.io/badge/docs-guidogagl.github.io-2b7bb9)](https://guidogagl.github.io/protosleepnet)
+[![Live demo](https://img.shields.io/website?url=https%3A%2F%2Fprotosleepnet-demo.pages.dev&label=live%20demo&up_message=online&up_color=E8664F)](https://protosleepnet-demo.pages.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/guidogagl/protosleepnet/blob/main/LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://github.com/guidogagl/protosleepnet/blob/main/pyproject.toml)
 [![Powered by physioex](https://img.shields.io/badge/powered%20by-physioex%20v2.0.0-6f42c1)](https://github.com/guidogagl/physioex)
 <!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)  -- minted at release -->
 
 Code for **"Prototype-based interpretable sleep staging with physiologically
 meaningful sub-stage pattern discovery"** (ProtoSleepNet), in press at
 *npj Digital Medicine*.
+
+> ▶ **Try it live — [protosleepnet-demo.pages.dev](https://protosleepnet-demo.pages.dev)** — an interactive atlas of the prototype space: click any epoch to see the exact evidence for its stage.
+
+[![ProtoSleepNet interactive explainability demo](https://raw.githubusercontent.com/guidogagl/protosleepnet/main/docs/_static/demo.gif)](https://protosleepnet-demo.pages.dev)
 
 ProtoSleepNet wraps a sleep-staging backbone (SeqSleepNet or SleepTransformer)
 with a **Prototype Sub-Stage (PSS)** module: per-channel encoding, modality
@@ -18,7 +26,9 @@ into a small, interpretable **prototype codebook**. The prototypes carry
 physiologically meaningful, AASM-coherent sub-stage patterns and support
 exploratory clinical probing (Alzheimer's, Parkinson's).
 
-![ProtoSleepNet](docs/figures/schema.png)
+**📖 Documentation: [guidogagl.github.io/protosleepnet](https://guidogagl.github.io/protosleepnet)** — method overview, a guide to *how to interpret the model*, the embedded live demo, and the full paper-reproduction recipe.
+
+![ProtoSleepNet architecture](https://raw.githubusercontent.com/guidogagl/protosleepnet/main/docs/figures/schema.png)
 
 > **Built on [physioex](https://github.com/guidogagl/physioex) v2.0.0.**
 > <a href="https://github.com/guidogagl/physioex"><img src="https://raw.githubusercontent.com/guidogagl/physioex/refs/heads/main/docs/assets/images/logo.svg" width="180px" alt="physioex"></a>
