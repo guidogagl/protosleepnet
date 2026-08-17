@@ -8,8 +8,8 @@ repository" button.
 
 ```bibtex
 @unpublished{gagliardi2026protosleepnet,
-  title   = {Prototype-based sleep micro-structure learning for explainable and
-             robust multimodal recognition of sleep-related conditions},
+  title   = {Prototype-based interpretable sleep staging with physiologically
+             meaningful sub-stage pattern discovery},
   author  = {Gagliardi, Guido and Garcia Ciudad, Javier and Micca, Letizia and
              Kornum, Birgitte Rahbek and Gilat, Moran and Alfeo, Antonio Luca and
              Cimino, Mario G. C. A. and De Vos, Maarten},

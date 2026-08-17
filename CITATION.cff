@@ -23,7 +23,7 @@ references:
     notes: "Provides the ProtoSleepNet model, data loaders, preprocessing, splits, seeds and metrics used by this repository."
 preferred-citation:
   type: unpublished
-  title: "Prototype-based sleep micro-structure learning for explainable and robust multimodal recognition of sleep-related conditions"
+  title: "Prototype-based interpretable sleep staging with physiologically meaningful sub-stage pattern discovery"
   authors:
     - family-names: Gagliardi
       given-names: Guido
