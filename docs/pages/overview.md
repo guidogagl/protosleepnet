@@ -7,10 +7,11 @@ contextualized embedding onto a small, learned **codebook of $M=12$
 prototypes**. A sleep stage is then decided by *which prototypes an epoch
 resembles* — so reading the prototypes *is* reading the decision.
 
-This is the companion documentation to the paper **"Prototype-based
-interpretable sleep staging with physiologically meaningful sub-stage pattern
-discovery"** (in press, *npj Digital Medicine*), and to the **interactive
-explainability demo**.
+This is the companion documentation to the paper **"Prototype-based sleep
+micro-structure learning for explainable and robust multimodal recognition of
+sleep-related conditions"** (under review at *npj Digital Medicine*;
+[preprint](https://doi.org/10.21203/rs.3.rs-9169987/v1)), and to the
+**interactive explainability demo**.
 
 :::{admonition} ▶ Try it live
 :class: tip

@@ -2,7 +2,7 @@
 
 **Prototype-based, interpretable sleep staging — where reading the prototypes _is_ reading the decision.**
 
-[![Paper](https://img.shields.io/badge/npj%20Digital%20Medicine-in%20press-b31b1b)](https://www.nature.com/npjdigitalmed/)
+[![Preprint](https://img.shields.io/badge/preprint-Research%20Square-b31b1b)](https://doi.org/10.21203/rs.3.rs-9169987/v1)
 [![Docs](https://img.shields.io/badge/docs-guidogagl.github.io-2b7bb9)](https://guidogagl.github.io/protosleepnet)
 [![Live demo](https://img.shields.io/website?url=https%3A%2F%2Fprotosleepnet-demo.pages.dev&label=live%20demo&up_message=online&up_color=E8664F)](https://protosleepnet-demo.pages.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/guidogagl/protosleepnet/blob/main/LICENSE)
@@ -10,9 +10,10 @@
 [![Powered by physioex](https://img.shields.io/badge/powered%20by-physioex%20v2.0.0-6f42c1)](https://github.com/guidogagl/physioex)
 <!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)  -- minted at release -->
 
-Code for **"Prototype-based interpretable sleep staging with physiologically
-meaningful sub-stage pattern discovery"** (ProtoSleepNet), in press at
-*npj Digital Medicine*.
+Code for **"Prototype-based sleep micro-structure learning for explainable and
+robust multimodal recognition of sleep-related conditions"** (ProtoSleepNet),
+under review at *npj Digital Medicine*. Preprint:
+[10.21203/rs.3.rs-9169987/v1](https://doi.org/10.21203/rs.3.rs-9169987/v1).
 
 > ▶ **Try it live — [protosleepnet-demo.pages.dev](https://protosleepnet-demo.pages.dev)** — an interactive atlas of the prototype space: click any epoch to see the exact evidence for its stage.
 

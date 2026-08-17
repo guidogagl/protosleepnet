@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Gagliardi
     given-names: Guido
-    orcid: "https://orcid.org/0000-0000-0000-0000"   # TODO: fill ORCID
+    orcid: "https://orcid.org/0000-0003-2020-6439"
     affiliation: "KU Leuven"
   # TODO: add remaining co-authors (with ORCIDs) matching the manuscript author list
 repository-code: "https://github.com/guidogagl/protosleepnet"
@@ -22,10 +22,25 @@ references:
     version: "2.0.0"
     notes: "Provides the ProtoSleepNet model, data loaders, preprocessing, splits, seeds and metrics used by this repository."
 preferred-citation:
-  type: article
-  title: "Prototype-based interpretable sleep staging with physiologically meaningful sub-stage pattern discovery"
+  type: unpublished
+  title: "Prototype-based sleep micro-structure learning for explainable and robust multimodal recognition of sleep-related conditions"
   authors:
     - family-names: Gagliardi
       given-names: Guido
-  journal: "npj Digital Medicine"
-  year: 2026   # TODO: confirm at acceptance
+    - family-names: Garcia Ciudad
+      given-names: Javier
+    - family-names: Micca
+      given-names: Letizia
+    - family-names: Kornum
+      given-names: Birgitte Rahbek
+    - family-names: Gilat
+      given-names: Moran
+    - family-names: Alfeo
+      given-names: Antonio Luca
+    - family-names: Cimino
+      given-names: Mario G. C. A.
+    - family-names: De Vos
+      given-names: Maarten
+  doi: "10.21203/rs.3.rs-9169987/v1"
+  year: 2026
+  notes: "Under review at npj Digital Medicine. Research Square preprint, posted 1 April 2026."

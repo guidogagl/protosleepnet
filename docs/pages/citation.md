@@ -7,13 +7,15 @@ repository" button.
 ## Paper
 
 ```bibtex
-@article{gagliardi2026protosleepnet,
-  title   = {Prototype-based interpretable sleep staging with physiologically
-             meaningful sub-stage pattern discovery},
-  author  = {Gagliardi, Guido and others},
-  journal = {npj Digital Medicine},
+@unpublished{gagliardi2026protosleepnet,
+  title   = {Prototype-based sleep micro-structure learning for explainable and
+             robust multimodal recognition of sleep-related conditions},
+  author  = {Gagliardi, Guido and Garcia Ciudad, Javier and Micca, Letizia and
+             Kornum, Birgitte Rahbek and Gilat, Moran and Alfeo, Antonio Luca and
+             Cimino, Mario G. C. A. and De Vos, Maarten},
   year    = {2026},
-  note    = {In press}
+  doi     = {10.21203/rs.3.rs-9169987/v1},
+  note    = {Under review at npj Digital Medicine. Research Square preprint}
 }
 ```
 
