@@ -10,10 +10,13 @@
 [![Powered by physioex](https://img.shields.io/badge/powered%20by-physioex%20v2.0.0-6f42c1)](https://github.com/guidogagl/physioex)
 <!-- [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)  -- minted at release -->
 
-Code for **"Prototype-based sleep micro-structure learning for explainable and
-robust multimodal recognition of sleep-related conditions"** (ProtoSleepNet),
-under review at *npj Digital Medicine*. Preprint:
-[10.21203/rs.3.rs-9169987/v1](https://doi.org/10.21203/rs.3.rs-9169987/v1).
+Code for **"Prototype-based interpretable sleep staging with physiologically
+meaningful sub-stage pattern discovery"** (ProtoSleepNet), under review at
+*npj Digital Medicine*. The revised manuscript (v2) is on the
+[project website](https://guidogagl.github.io/publications/); version 1 is on
+Research Square,
+[10.21203/rs.3.rs-9169987/v1](https://doi.org/10.21203/rs.3.rs-9169987/v1),
+under an earlier title.
 
 > ▶ **Try it live — [protosleepnet-demo.pages.dev](https://protosleepnet-demo.pages.dev)** — an interactive atlas of the prototype space: click any epoch to see the exact evidence for its stage.
 
