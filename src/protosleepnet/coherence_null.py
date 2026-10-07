@@ -232,7 +232,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     add_common_args(ap)
     ap.add_argument("--n_codebooks", type=int, default=50)
-    ap.add_argument("--variant", choices=["uniform", "stratified"], default="stratified")
+    ap.add_argument("--variant", choices=["uniform", "stratified", "both"], default="stratified")
     ap.add_argument("--stage_alloc", default="W:2,N2:6,N3:2,REM:2",
                     help="entries per predicted stage for the stratified draw (real codebook's allocation)")
     ap.add_argument("--pool_subjects", type=int, default=None, help="random subset of training subjects")
@@ -296,17 +296,18 @@ def main() -> int:
             atomic_write(p, res)
             log(f"real: {res['counts']}  stages {res['stage_composition']}")
 
-    rng = np.random.RandomState(args.seed)
-    for k in range(args.n_codebooks):
-        sel = draw_entries(rng, pred, args.m, args.variant, alloc)   # advanced for every k
-        p = out / f"{args.variant}_{k:03d}.json"
-        if p.exists():
-            continue
-        log(f"codebook {k + 1}/{args.n_codebooks} ({args.variant})")
-        res = run_codebook(model, Z[sel], raw, Z, index, pred, tm, bands, device, args.top_k, f"{k:03d}")
-        res.update(variant=args.variant, k=k, seed=args.seed, selected=[int(i) for i in sel])
-        atomic_write(p, res)
-        log(f"  -> {res['counts']}  stages {res['stage_composition']}")
+    for variant in (["stratified", "uniform"] if args.variant == "both" else [args.variant]):
+        rng = np.random.RandomState(args.seed)
+        for k in range(args.n_codebooks):
+            sel = draw_entries(rng, pred, args.m, variant, alloc)   # advanced for every k
+            p = out / f"{variant}_{k:03d}.json"
+            if p.exists():
+                continue
+            log(f"codebook {k + 1}/{args.n_codebooks} ({variant})")
+            res = run_codebook(model, Z[sel], raw, Z, index, pred, tm, bands, device, args.top_k, f"{k:03d}")
+            res.update(variant=variant, k=k, seed=args.seed, selected=[int(i) for i in sel])
+            atomic_write(p, res)
+            log(f"  -> {res['counts']}  stages {res['stage_composition']}")
     log("done")
     return 0
 
